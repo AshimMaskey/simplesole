@@ -22,7 +22,7 @@ const LoginPage = () => {
 
           <div className="mb-4">
             <SignInButton forceRedirectUrl="/profile" mode="modal">
-              <button className="w-full bg-indigo-600 text-white rounded-full font-medium text-base py-3 hover:bg-indigo-700 transition">
+              <button className="w-full bg-indigo-600 cursor-pointer text-white rounded-full font-medium text-base py-3 hover:bg-indigo-700 transition">
                 Sign In
               </button>
             </SignInButton>
@@ -35,7 +35,7 @@ const LoginPage = () => {
           </div>
 
           <SignUpButton mode="modal">
-            <button className="w-full bg-white border border-indigo-500 text-indigo-600 rounded-full font-medium text-base py-3 hover:bg-indigo-50 transition">
+            <button className="w-full bg-white border cursor-pointer border-indigo-500 text-indigo-600 rounded-full font-medium text-base py-3 hover:bg-indigo-50 transition">
               Create an Account
             </button>
           </SignUpButton>

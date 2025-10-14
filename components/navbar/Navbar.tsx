@@ -48,9 +48,11 @@ const Navbar = () => {
               </Link>
             </div>
             <div>
-              <Button size={"icon"} variant="ghost">
-                <Heart />
-              </Button>
+              <Link href="/wishlist">
+                <Button size={"icon"} variant="ghost">
+                  <Heart />
+                </Button>
+              </Link>
             </div>
             <div>
               <Button
