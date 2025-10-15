@@ -48,13 +48,14 @@
 
 // export default Home;
 
+import Herosection from "@/components/homepage/herosection/Herosection";
 import { Button } from "@/components/ui/button";
 import React from "react";
 
 const Home = () => {
   return (
     <div>
-      <Button variant={"secondary"}>Click me</Button>
+      <Herosection />
     </div>
   );
 };
