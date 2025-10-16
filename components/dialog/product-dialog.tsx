@@ -27,12 +27,16 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import type { Product, ProductVariant } from "@/types/product";
+// import { saveProduct } from "@/actions/save-product";
+import { saveProduct } from "@/app/(admin)/products/actions/productActions";
+// import { useToast } from "@/hooks/use-toast";
+import toast from "react-hot-toast";
 
 interface ProductDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   product: Product | null;
-  onSave: (product: Product) => void;
+  onSave: () => void;
 }
 
 export function ProductDialog({
@@ -59,6 +63,8 @@ export function ProductDialog({
     stock: 0,
     sku: "",
   });
+  const [isSaving, setIsSaving] = useState(false);
+  // const { toast } = useToast();
 
   useEffect(() => {
     if (product) {
@@ -87,9 +93,35 @@ export function ProductDialog({
     }
   }, [formData.variants]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData as Product);
+
+    try {
+      setIsSaving(true);
+      await saveProduct(formData as Product & { variants?: ProductVariant[] });
+      // toast({
+      //   title: "Success",
+      //   description: product
+      //     ? "Product updated successfully."
+      //     : "Product added successfully.",
+      // });
+      if (product) {
+        toast.success("Product updated successfully.");
+      } else {
+        toast.success("Product added successfully.");
+      }
+      onSave();
+    } catch (error) {
+      console.error("[v0] Error saving product:", error);
+      // toast({
+      //   title: "Error",
+      //   description: "Failed to save product. Please try again.",
+      //   variant: "destructive",
+      // });
+      toast.error("Failed to save product. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleAddImage = () => {
@@ -174,7 +206,7 @@ export function ProductDialog({
                 <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
-                  value={formData.description}
+                  value={formData.description || ""}
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
@@ -456,11 +488,16 @@ export function ProductDialog({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              disabled={isSaving}
             >
               Cancel
             </Button>
-            <Button type="submit">
-              {product ? "Update Product" : "Add Product"}
+            <Button type="submit" disabled={isSaving}>
+              {isSaving
+                ? "Saving..."
+                : product
+                ? "Update Product"
+                : "Add Product"}
             </Button>
           </DialogFooter>
         </form>

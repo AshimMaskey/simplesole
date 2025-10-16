@@ -320,7 +320,7 @@ export function ProductTable({
           </Table>
         </div>
 
-        {totalPages > 1 && (
+        {totalPages > 0 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-t">
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">
@@ -411,7 +411,7 @@ export function ProductTable({
               onClick={handleConfirmDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Delete
+              <span className="text-white">Delete</span>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -37,6 +37,6 @@ export type ProductVariant = {
   color: string;
   stock: number;
   sku: string;
-  productId: string; // foreign key
+  productId?: string; // foreign key
   product?: Product; // optional, only included if `include: { product: true }`
 };

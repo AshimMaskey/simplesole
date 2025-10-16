@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import toast from "react-hot-toast";
+import { useState, useMemo, useEffect } from "react";
 import { Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,196 +15,42 @@ import {
 import { ProductTable } from "@/components/table/product-table";
 import { ProductDialog } from "@/components/dialog/product-dialog";
 import type { Product } from "@/types/product";
-
-// Mock data for demonstration
-const mockProducts: Product[] = [
-  {
-    id: "1",
-    name: "Air Max 270",
-    description: "Comfortable running shoes with air cushioning technology",
-    category: "Running",
-    base_price: 149.99,
-    total_stock: 45,
-    status: "active",
-    images: ["/nike-air-max-270.png"],
-    created_at: "2024-01-15T10:00:00Z",
-    variants: [
-      { id: "v1", size: "9", color: "Black", stock: 15, sku: "AM270-BLK-9" },
-      { id: "v2", size: "10", color: "Black", stock: 20, sku: "AM270-BLK-10" },
-      { id: "v3", size: "11", color: "White", stock: 10, sku: "AM270-WHT-11" },
-    ],
-  },
-  {
-    id: "2",
-    name: "Classic Leather Sneaker",
-    description: "Timeless leather sneakers for everyday wear",
-    category: "Casual",
-    base_price: 89.99,
-    total_stock: 120,
-    status: "active",
-    images: ["/leather-sneaker.jpg"],
-    created_at: "2024-01-20T14:30:00Z",
-    variants: [
-      { id: "v4", size: "8", color: "Brown", stock: 30, sku: "CLS-BRN-8" },
-      { id: "v5", size: "9", color: "Brown", stock: 40, sku: "CLS-BRN-9" },
-      { id: "v6", size: "10", color: "Black", stock: 50, sku: "CLS-BLK-10" },
-    ],
-  },
-  {
-    id: "3",
-    name: "Trail Runner Pro",
-    description: "Durable trail running shoes with enhanced grip",
-    category: "Trail",
-    base_price: 179.99,
-    total_stock: 0,
-    status: "inactive",
-    images: ["/trail-running-shoes.jpg"],
-    created_at: "2024-02-01T09:15:00Z",
-  },
-  {
-    id: "4",
-    name: "Basketball Elite",
-    description: "High-performance basketball shoes with ankle support",
-    category: "Basketball",
-    base_price: 199.99,
-    total_stock: 32,
-    status: "active",
-    images: ["/athletic-basketball-shoes.png"],
-    created_at: "2024-02-10T16:45:00Z",
-    variants: [
-      { id: "v7", size: "10", color: "Red", stock: 12, sku: "BBE-RED-10" },
-      { id: "v8", size: "11", color: "Blue", stock: 20, sku: "BBE-BLU-11" },
-    ],
-  },
-  {
-    id: "5",
-    name: "Minimalist Runner",
-    description: "Lightweight minimalist running shoes",
-    category: "Running",
-    base_price: 119.99,
-    total_stock: 8,
-    status: "active",
-    images: ["/minimalist-running-shoes.jpg"],
-    created_at: "2024-02-15T11:20:00Z",
-    variants: [
-      { id: "v9", size: "9", color: "Gray", stock: 3, sku: "MR-GRY-9" },
-      { id: "v10", size: "10", color: "Gray", stock: 5, sku: "MR-GRY-10" },
-    ],
-  },
-  {
-    id: "6",
-    name: "Urban Street Sneaker",
-    description: "Stylish street-style sneakers for urban fashion",
-    category: "Casual",
-    base_price: 99.99,
-    total_stock: 65,
-    status: "active",
-    images: ["/urban-street-sneaker.jpg"],
-    created_at: "2024-02-20T13:30:00Z",
-    variants: [
-      { id: "v11", size: "8", color: "White", stock: 25, sku: "USS-WHT-8" },
-      { id: "v12", size: "9", color: "Black", stock: 40, sku: "USS-BLK-9" },
-    ],
-  },
-  {
-    id: "7",
-    name: "Performance Training Shoe",
-    description: "Cross-training shoes for gym and fitness",
-    category: "Training",
-    base_price: 129.99,
-    total_stock: 88,
-    status: "active",
-    images: ["/athletic-training-shoes.png"],
-    created_at: "2024-02-25T10:00:00Z",
-    variants: [
-      { id: "v13", size: "9", color: "Blue", stock: 30, sku: "PTS-BLU-9" },
-      { id: "v14", size: "10", color: "Red", stock: 28, sku: "PTS-RED-10" },
-      { id: "v15", size: "11", color: "Black", stock: 30, sku: "PTS-BLK-11" },
-    ],
-  },
-  {
-    id: "8",
-    name: "Hiking Boot Pro",
-    description: "Waterproof hiking boots for outdoor adventures",
-    category: "Hiking",
-    base_price: 189.99,
-    total_stock: 42,
-    status: "active",
-    images: ["/hiking-boots-close-up.png"],
-    created_at: "2024-03-01T08:45:00Z",
-    variants: [
-      { id: "v16", size: "9", color: "Brown", stock: 15, sku: "HBP-BRN-9" },
-      { id: "v17", size: "10", color: "Brown", stock: 27, sku: "HBP-BRN-10" },
-    ],
-  },
-  {
-    id: "9",
-    name: "Soccer Cleat Elite",
-    description: "Professional soccer cleats with superior grip",
-    category: "Soccer",
-    base_price: 159.99,
-    total_stock: 0,
-    status: "inactive",
-    images: ["/soccer-cleats.jpg"],
-    created_at: "2024-03-05T15:20:00Z",
-  },
-  {
-    id: "10",
-    name: "Slip-On Comfort",
-    description: "Easy slip-on shoes for casual comfort",
-    category: "Casual",
-    base_price: 69.99,
-    total_stock: 95,
-    status: "active",
-    images: ["/slip-on-shoes.jpg"],
-    created_at: "2024-03-10T11:00:00Z",
-    variants: [
-      { id: "v18", size: "8", color: "Navy", stock: 35, sku: "SOC-NAV-8" },
-      { id: "v19", size: "9", color: "Gray", stock: 30, sku: "SOC-GRY-9" },
-      { id: "v20", size: "10", color: "Black", stock: 30, sku: "SOC-BLK-10" },
-    ],
-  },
-  {
-    id: "11",
-    name: "Marathon Runner",
-    description: "Long-distance running shoes with maximum cushioning",
-    category: "Running",
-    base_price: 169.99,
-    total_stock: 54,
-    status: "active",
-    images: ["/marathon-running-shoes.jpg"],
-    created_at: "2024-03-15T09:30:00Z",
-    variants: [
-      { id: "v21", size: "9", color: "Orange", stock: 18, sku: "MR-ORG-9" },
-      { id: "v22", size: "10", color: "Blue", stock: 20, sku: "MR-BLU-10" },
-      { id: "v23", size: "11", color: "Green", stock: 16, sku: "MR-GRN-11" },
-    ],
-  },
-  {
-    id: "12",
-    name: "Tennis Court Pro",
-    description: "Professional tennis shoes with lateral support",
-    category: "Tennis",
-    base_price: 139.99,
-    total_stock: 6,
-    status: "active",
-    images: ["/colorful-tennis-shoes.png"],
-    created_at: "2024-03-20T14:15:00Z",
-    variants: [
-      { id: "v24", size: "9", color: "White", stock: 3, sku: "TCP-WHT-9" },
-      { id: "v25", size: "10", color: "White", stock: 3, sku: "TCP-WHT-10" },
-    ],
-  },
-];
+// import { getProducts, deleteProduct }
+import { getProducts, deleteProduct } from "./actions/productActions";
+// import { useToast } from "@/hooks/use-toast";
 
 export default function ProductManagementPage() {
-  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const [products, setProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterBy, setFilterBy] = useState<string>("all");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
+  const [isLoading, setIsLoading] = useState(true);
+  // const { toast } = useToast();
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  const loadProducts = async () => {
+    try {
+      setIsLoading(true);
+      const data = await getProducts();
+      setProducts(data);
+    } catch (error) {
+      console.error("[v0] Error loading products:", error);
+      // toast({
+      //   title: "Error",
+      //   description: "Failed to load products. Please try again.",
+      //   variant: "destructive",
+      // });
+      toast.error("Failed to load products. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -253,24 +100,42 @@ export default function ProductManagementPage() {
     setIsDialogOpen(true);
   };
 
-  const handleDeleteProduct = (productId: string) => {
-    setProducts(products.filter((p) => p.id !== productId));
+  const handleDeleteProduct = async (productId: string) => {
+    try {
+      await deleteProduct(productId);
+      await loadProducts();
+      // toast({
+      //   title: "Success",
+      //   description: "Product deleted successfully.",
+      // });
+      toast.success("Product deleted successfully.");
+    } catch (error) {
+      console.error("[v0] Error deleting product:", error);
+      // toast({
+      //   title: "Error",
+      //   description: "Failed to delete product. Please try again.",
+      //   variant: "destructive",
+      // });
+      toast.error("Failed to delete product. Please try again.");
+    }
   };
 
-  const handleSaveProduct = (product: Product) => {
-    if (editingProduct) {
-      setProducts(products.map((p) => (p.id === product.id ? product : p)));
-    } else {
-      const newProduct = {
-        ...product,
-        id: Date.now().toString(),
-        created_at: new Date().toISOString(),
-      };
-      setProducts([newProduct, ...products]);
-    }
+  const handleSaveProduct = async () => {
     setIsDialogOpen(false);
     setEditingProduct(null);
+    await loadProducts();
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading products...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
