@@ -1,52 +1,106 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { Sidebar, SidebarBody, SidebarLink } from "../ui/sidebar";
 import {
-  IconArrowLeft,
   IconBrandTabler,
   IconSettings,
   IconUserBolt,
+  IconPackage,
+  IconShoppingCart,
+  IconUsers,
+  IconBox,
+  IconTag,
+  IconChartBar,
+  IconLogout,
 } from "@tabler/icons-react";
-import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
+import { SignOutButton, useUser } from "@clerk/nextjs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import Link from "next/link";
 
-export function AdminSidebar() {
+export function AdminSidebar({
+  open,
+  setOpen,
+}: {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const links = [
     {
       label: "Dashboard",
-      href: "#",
+      href: "/dashboard",
       icon: (
         <IconBrandTabler className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
     },
     {
+      label: "Products",
+      href: "products",
+      icon: (
+        <IconPackage className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+    {
+      label: "Orders",
+      href: "#orders",
+      icon: (
+        <IconShoppingCart className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+    {
+      label: "Users",
+      href: "users",
+      icon: (
+        <IconUsers className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+    {
+      label: "Inventory",
+      href: "#inventory",
+      icon: (
+        <IconBox className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+    {
+      label: "Discounts",
+      href: "#discounts",
+      icon: (
+        <IconTag className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+    {
+      label: "Reports",
+      href: "#reports",
+      icon: (
+        <IconChartBar className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+    {
       label: "Profile",
-      href: "#",
+      href: "#profile",
       icon: (
         <IconUserBolt className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
     },
     {
       label: "Settings",
-      href: "#",
+      href: "#settings",
       icon: (
         <IconSettings className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
     },
-    {
-      label: "Logout",
-      href: "#",
-      icon: (
-        <IconArrowLeft className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
-    },
   ];
-  const [open, setOpen] = useState(false);
+  const { user } = useUser();
   return (
     <div
       className={cn(
-        "mx-auto flex w-full max-w-7xl flex-1 flex-col overflow-hidden rounded-md border border-neutral-200 bg-gray-100 md:flex-row dark:border-neutral-700 dark:bg-neutral-800",
-        "h-[60vh]" // for your use case, use `h-screen` instead of `h-[60vh]`
+        "fixed left-0 top-0 h-screen border-r border-neutral-200 bg-gray-100 dark:border-neutral-700 dark:bg-neutral-900",
+        open ? "w-64" : "w-16",
+        "transition-all duration-300"
       )}
     >
       <Sidebar open={open} setOpen={setOpen}>
@@ -59,14 +113,15 @@ export function AdminSidebar() {
               ))}
             </div>
           </div>
-          <div>
+          <div className="flex items-center mb-15">
             <SidebarLink
+              className="mb-2"
               link={{
-                label: "Manu Arora",
+                label: `${user?.fullName || "...."}`,
                 href: "#",
                 icon: (
                   <img
-                    src="https://assets.aceternity.com/manu.png"
+                    src={`${user?.imageUrl || "/fallback.jpeg"}`}
                     className="h-7 w-7 shrink-0 rounded-full"
                     width={50}
                     height={50}
@@ -75,28 +130,38 @@ export function AdminSidebar() {
                 ),
               }}
             />
+            {open && (
+              <div className="ml-2 transition duration-300">
+                <Tooltip>
+                  <TooltipTrigger>
+                    <SignOutButton>
+                      <IconLogout className="h-5 w-7 cursor-pointer shrink-0 text-neutral-700 dark:text-neutral-200" />
+                    </SignOutButton>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Log Out</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            )}
           </div>
         </SidebarBody>
       </Sidebar>
-      <Dashboard />
     </div>
   );
 }
 export const Logo = () => {
   return (
-    <a
-      href="#"
+    <Link
+      href="/"
       className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black"
     >
       <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="font-medium whitespace-pre text-black dark:text-white"
-      >
-        Acet Labs
-      </motion.span>
-    </a>
+
+      <h1 className="font-medium whitespace-pre text-black dark:text-white">
+        SoleMate
+      </h1>
+    </Link>
   );
 };
 export const LogoIcon = () => {
@@ -107,31 +172,5 @@ export const LogoIcon = () => {
     >
       <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
     </a>
-  );
-};
-
-// Dummy dashboard component with content
-const Dashboard = () => {
-  return (
-    <div className="flex flex-1">
-      <div className="flex h-full w-full flex-1 flex-col gap-2 rounded-tl-2xl border border-neutral-200 bg-white p-2 md:p-10 dark:border-neutral-700 dark:bg-neutral-900">
-        <div className="flex gap-2">
-          {[...new Array(4)].map((i, idx) => (
-            <div
-              key={"first-array-demo-1" + idx}
-              className="h-20 w-full animate-pulse rounded-lg bg-gray-100 dark:bg-neutral-800"
-            ></div>
-          ))}
-        </div>
-        <div className="flex flex-1 gap-2">
-          {[...new Array(2)].map((i, idx) => (
-            <div
-              key={"second-array-demo-1" + idx}
-              className="h-full w-full animate-pulse rounded-lg bg-gray-100 dark:bg-neutral-800"
-            ></div>
-          ))}
-        </div>
-      </div>
-    </div>
   );
 };
