@@ -40,3 +40,26 @@ export type ProductVariant = {
   productId?: string; // foreign key
   product?: Product; // optional, only included if `include: { product: true }`
 };
+
+export type Filters = {
+  categories: string[];
+  priceRange: [number, number];
+  status: string[];
+  sizes: string[];
+  colors: string[];
+  search: string;
+  sortBy: string;
+};
+
+export type CartItem = {
+  id: string;
+  product: Product;
+  variant: ProductVariant;
+  quantity: number;
+};
+
+export type WishlistItem = {
+  id: string;
+  product: Product;
+  addedAt: Date;
+};

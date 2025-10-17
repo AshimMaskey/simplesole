@@ -1,5 +1,4 @@
 import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
-import React from "react";
 
 const Herosection = () => {
   const words = [
@@ -16,9 +15,13 @@ const Herosection = () => {
   return (
     <div>
       {/* Middle Section */}
-      <section className="w-full flex items-center justify-center min-h-screen overflow-hidden bg-black">
-        {/* Overlay for better text visibility */}
-        <div className="absolute inset-0 " />
+      <section
+        className="w-full flex items-center justify-center min-h-screen overflow-hidden bg-cover bg-center bg-no-repeat relative"
+        style={{
+          backgroundImage: "url('/store.jpg')",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/60" />
         {/* Content */}
         <div className="relative z-10 container mx-auto px-4 text-center text-white">
           <h1

@@ -34,28 +34,44 @@ const Navbar = () => {
           </div>
           <div className="flex gap-2 items-center">
             <div className="relative">
-              <Input className="pl-10" type="text" placeholder="Search" />
-              <Search
-                className="absolute left-3 top-1/2 -translate-y-1/2 "
-                size={16}
-              />
+              <Link href={"/search"}>
+                <Input
+                  className="pl-10 border-2 border-gray-400"
+                  disabled
+                  type="text"
+                  placeholder="Search"
+                />
+                <Search
+                  className="absolute left-3 top-1/2 -translate-y-1/2 "
+                  size={16}
+                />
+              </Link>
             </div>
             <div>
               <Link href={"/cart"}>
-                <Button size={"icon"} variant={"ghost"}>
+                <Button
+                  className="cursor-pointer"
+                  size={"icon"}
+                  variant={"ghost"}
+                >
                   <ShoppingCart />
                 </Button>
               </Link>
             </div>
             <div>
               <Link href="/wishlist">
-                <Button size={"icon"} variant="ghost">
+                <Button
+                  className="cursor-pointer"
+                  size={"icon"}
+                  variant="ghost"
+                >
                   <Heart />
                 </Button>
               </Link>
             </div>
             <div>
               <Button
+                className="cursor-pointer"
                 size={"icon"}
                 variant={"ghost"}
                 onClick={handleProfileClick}

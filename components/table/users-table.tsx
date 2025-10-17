@@ -116,8 +116,8 @@ export function UsersTable({ users: initialUsers }: UsersTableProps) {
     if (!sortDirection) return filteredUsers;
 
     return [...filteredUsers].sort((a, b) => {
-      let aValue: string | number = a[sortField] as any;
-      let bValue: string | number = b[sortField] as any;
+      let aValue: any = a[sortField];
+      let bValue: any = b[sortField];
 
       if (!aValue) return 1;
       if (!bValue) return -1;

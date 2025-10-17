@@ -48,15 +48,20 @@
 
 // export default Home;
 
+import BrandStory from "@/components/homepage/brand-story";
+import FeaturedCollections from "@/components/homepage/featured-collections";
 import Herosection from "@/components/homepage/herosection/Herosection";
-import { Button } from "@/components/ui/button";
+import PopularProducts from "@/components/homepage/popular-products";
 import React from "react";
 
 const Home = () => {
   return (
-    <div>
+    <main>
       <Herosection />
-    </div>
+      <FeaturedCollections />
+      <BrandStory />
+      <PopularProducts />
+    </main>
   );
 };
 
