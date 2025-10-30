@@ -141,7 +141,7 @@ export function NavigationMenuDemo() {
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
-        <NavigationMenuItem>
+        {/* <NavigationMenuItem>
           <NavigationMenuTrigger>Sale</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[200px] gap-4">
@@ -158,7 +158,7 @@ export function NavigationMenuDemo() {
               </li>
             </ul>
           </NavigationMenuContent>
-        </NavigationMenuItem>{" "}
+        </NavigationMenuItem>{" "} */}
         <NavigationMenuItem>
           <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
             <Link href="/shop">Shop</Link>

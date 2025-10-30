@@ -1,4 +1,5 @@
 import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
+import Link from "next/link";
 
 const Herosection = () => {
   const words = [
@@ -64,13 +65,15 @@ const Herosection = () => {
               className="relative flex items-center justify-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white text-lg font-semibold rounded-full shadow-lg transform hover:scale-105 transition-transform duration-200"
             >
               <span className="absolute inset-0 rounded-full bg-green-600 opacity-50 animate-pulse" />
-              <span className="relative z-10 pr-2">Shop Now</span>
+              <Link href={"/shop"}>
+                <span className="relative z-10 pr-2">Shop Now</span>
+              </Link>
             </a>
           </div>
         </div>
         {/* Scroll Down Icon */}
         <div className="absolute sm:bottom-14 bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <a href="#about" className="cursor-pointer">
+          <a href="#" className="cursor-pointer">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-12 w-12 text-white"

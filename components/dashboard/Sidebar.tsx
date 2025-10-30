@@ -45,17 +45,24 @@ export function AdminSidebar({
       ),
     },
     {
-      label: "Orders",
-      href: "#orders",
-      icon: (
-        <IconShoppingCart className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
-    },
-    {
       label: "Users",
       href: "users",
       icon: (
         <IconUsers className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+    {
+      label: "Reviews",
+      href: "reviews",
+      icon: (
+        <IconUserBolt className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+    {
+      label: "Orders",
+      href: "#orders",
+      icon: (
+        <IconShoppingCart className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
     },
     {
@@ -65,27 +72,21 @@ export function AdminSidebar({
         <IconBox className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
     },
-    {
-      label: "Discounts",
-      href: "#discounts",
-      icon: (
-        <IconTag className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
-    },
-    {
-      label: "Reports",
-      href: "#reports",
-      icon: (
-        <IconChartBar className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
-    },
-    {
-      label: "Profile",
-      href: "#profile",
-      icon: (
-        <IconUserBolt className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
-    },
+    // {
+    //   label: "Discounts",
+    //   href: "#discounts",
+    //   icon: (
+    //     <IconTag className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+    //   ),
+    // },
+    // {
+    //   label: "Reports",
+    //   href: "#reports",
+    //   icon: (
+    //     <IconChartBar className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+    //   ),
+    // },
+
     {
       label: "Settings",
       href: "#settings",

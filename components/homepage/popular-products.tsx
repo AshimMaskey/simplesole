@@ -1,6 +1,9 @@
+"use client";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import toast from "react-hot-toast";
+import Link from "next/link";
 
 export default function PopularProducts() {
   const products = [
@@ -46,9 +49,12 @@ export default function PopularProducts() {
               Our most-loved styles, chosen by the community
             </p>
           </div>
-          <Button variant="outline" className="hidden md:flex bg-transparent">
-            View All Products
-          </Button>
+          <Link href={"/shop"}>
+            {" "}
+            <Button variant="outline" className="hidden md:flex bg-transparent">
+              View All Products
+            </Button>
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -80,8 +86,11 @@ export default function PopularProducts() {
                     <span className="text-xl font-bold">{product.price}</span>
                     <Button
                       size="sm"
-                      variant="ghost"
-                      className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                      // variant="ghost"
+                      className=" bg-black text-white cursor-pointer"
+                      onClick={() =>
+                        toast.success("Item added to cart successfully!")
+                      }
                     >
                       Add to Cart
                     </Button>

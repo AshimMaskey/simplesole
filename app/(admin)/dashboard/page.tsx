@@ -25,26 +25,26 @@ const AdminDashboard = () => {
       value: "870",
       icon: <IconBox className="h-6 w-6 text-yellow-500" />,
     },
-    {
-      title: "Inventory",
-      value: "870",
-      icon: <IconBox className="h-6 w-6 text-yellow-500" />,
-    },
-    {
-      title: "Inventory",
-      value: "870",
-      icon: <IconBox className="h-6 w-6 text-yellow-500" />,
-    },
-    {
-      title: "Inventory",
-      value: "870",
-      icon: <IconBox className="h-6 w-6 text-yellow-500" />,
-    },
-    {
-      title: "Inventory",
-      value: "870",
-      icon: <IconBox className="h-6 w-6 text-yellow-500" />,
-    },
+    // {
+    //   title: "Inventory",
+    //   value: "870",
+    //   icon: <IconBox className="h-6 w-6 text-yellow-500" />,
+    // },
+    // {
+    //   title: "Inventory",
+    //   value: "870",
+    //   icon: <IconBox className="h-6 w-6 text-yellow-500" />,
+    // },
+    // {
+    //   title: "Inventory",
+    //   value: "870",
+    //   icon: <IconBox className="h-6 w-6 text-yellow-500" />,
+    // },
+    // {
+    //   title: "Inventory",
+    //   value: "870",
+    //   icon: <IconBox className="h-6 w-6 text-yellow-500" />,
+    // },
     {
       title: "Discounts Active",
       value: "12",
@@ -66,7 +66,7 @@ const AdminDashboard = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6">
         {stats.map((stat, idx) => (
           <Card key={idx} className="flex items-center rounded-sm gap-4 p-4">
             {stat.icon}

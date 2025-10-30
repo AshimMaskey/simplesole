@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function FeaturedCollections() {
   const collections = [
@@ -58,7 +59,7 @@ export default function FeaturedCollections() {
                   variant="outline"
                   className="bg-white/10 border-white/20 text-white hover:bg-white hover:text-black backdrop-blur-sm"
                 >
-                  Shop Now
+                  <Link href={"/shop"}>Shop Now</Link>
                 </Button>
               </div>
             </div>
