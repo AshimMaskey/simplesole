@@ -1,0 +1,180 @@
+"use client";
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
+import { Star } from "lucide-react";
+
+const mockReviews = [
+  {
+    id: 1,
+    user: "Alice Johnson",
+    comment:
+      "Great product! Really comfortable and fits perfectly. The quality exceeded my expectations.",
+    rating: 5,
+    date: "2024-01-15",
+  },
+  {
+    id: 2,
+    user: "Bob Smith",
+    comment:
+      "Good quality material, but the color was slightly different from the pictures. Still happy with the purchase.",
+    rating: 4,
+    date: "2024-01-12",
+  },
+  {
+    id: 3,
+    user: "Charlie Brown",
+    comment:
+      "Average product, expected better material for the price. The design is nice though.",
+    rating: 3,
+    date: "2024-01-08",
+  },
+];
+
+const StarRating = ({ rating }: { rating: number }) => {
+  return (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          className={`w-4 h-4 ${
+            star <= rating
+              ? "fill-yellow-400 text-yellow-400"
+              : "fill-gray-300 text-gray-300"
+          }`}
+        />
+      ))}
+    </div>
+  );
+};
+
+const TabsSection = ({ description }: { description: string | null }) => {
+  const averageRating =
+    mockReviews.reduce((acc, review) => acc + review.rating, 0) /
+    mockReviews.length;
+
+  return (
+    <div className="mt-12 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Tabs defaultValue="description" className="w-full">
+        <TabsList className="flex w-full border-b border-gray-200 mb-8">
+          <TabsTrigger
+            value="description"
+            className="flex-1 cursor-pointer px-6 py-4 font-semibold text-gray-600 data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 transition-all duration-200 hover:text-gray-900"
+          >
+            Description
+          </TabsTrigger>
+          <TabsTrigger
+            value="reviews"
+            className="flex-1 cursor-pointer px-6 py-4 font-semibold text-gray-600 data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 transition-all duration-200 hover:text-gray-900 flex items-center justify-center gap-2"
+          >
+            Reviews
+            <span className="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full min-w-6">
+              {mockReviews.length}
+            </span>
+          </TabsTrigger>
+        </TabsList>
+
+        {/* DESCRIPTION */}
+        <TabsContent value="description" className="focus:outline-none">
+          <div className="space-y-6 sm:space-y-8 md:space-y-10">
+            <h3 className="text-2xl md:text-3xl font-semibold text-gray-900">
+              Product Details
+            </h3>
+            <p className="text-gray-700 leading-relaxed text-base sm:text-lg md:text-lg">
+              {description ||
+                "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Corrupti nam deleniti natus nesciunt maiores, harum illo dolorem fugiat quibusdam fuga?"}
+            </p>
+            <ul className="space-y-3 md:space-y-4 list-disc pl-5 text-gray-700 text-base sm:text-lg">
+              <li>Premium quality materials</li>
+              <li>Eco-friendly manufacturing process</li>
+              <li>2-year warranty included</li>
+              <li>Easy maintenance and care</li>
+            </ul>
+          </div>
+        </TabsContent>
+
+        {/* REVIEWS */}
+        <TabsContent value="reviews" className="focus:outline-none">
+          <div className="space-y-8">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
+              <div className="text-center md:text-left">
+                <div className="text-3xl font-bold text-gray-900">
+                  {averageRating.toFixed(1)}
+                </div>
+                <StarRating rating={Math.round(averageRating)} />
+                <div className="text-sm text-gray-600 mt-1">
+                  {mockReviews.length} reviews
+                </div>
+              </div>
+              <div className="flex-1 w-full">
+                <div className="space-y-2">
+                  {[5, 4, 3, 2, 1].map((rating) => {
+                    const count = mockReviews.filter(
+                      (r) => r.rating === rating
+                    ).length;
+                    const percentage = (count / mockReviews.length) * 100;
+                    return (
+                      <div
+                        key={rating}
+                        className="flex items-center gap-2 text-sm"
+                      >
+                        <span className="w-8 text-gray-600">{rating}</span>
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <div className="flex-1 bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-yellow-400 h-2 rounded-full"
+                            style={{ width: `${percentage}%` }}
+                          ></div>
+                        </div>
+                        <span className="w-8 text-gray-600 text-right">
+                          {count}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              {mockReviews.map((review) => (
+                <div
+                  key={review.id}
+                  className="border border-gray-200 p-6 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow duration-200"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <div className="font-semibold text-gray-900">
+                        {review.user}
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <StarRating rating={review.rating} />
+                        <span className="text-sm text-gray-500">
+                          {new Date(review.date).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
+                    {review.comment}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {mockReviews.length === 0 && (
+              <div className="text-center py-12">
+                <div className="text-gray-400 text-6xl mb-4">💬</div>
+                <p className="text-gray-500 text-lg">No reviews yet</p>
+                <p className="text-gray-400 text-sm mt-2">
+                  Be the first to share your thoughts!
+                </p>
+              </div>
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+};
+
+export default TabsSection;

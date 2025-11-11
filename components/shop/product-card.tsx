@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { Product } from "@/types/product";
 import { ShoppingCart, Eye } from "lucide-react";
+import Link from "next/link";
 
 interface ProductCardProps {
   product: Product;
@@ -50,17 +51,21 @@ export function ProductCard({
               isHovered ? "opacity-100" : "opacity-0"
             }`}
           >
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={(e) => {
-                e.stopPropagation();
-                onViewDetails(product);
-              }}
-            >
-              <Eye className="h-4 w-4 mr-2" />
-              View Details
-            </Button>
+            <Link href={`/products/${product.id}`}>
+              {" "}
+              <Button
+                size="sm"
+                className="cursor-pointer"
+                variant="secondary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // onViewDetails(product);
+                }}
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                View Details
+              </Button>
+            </Link>
           </div>
         </div>
         <div className="p-4 space-y-2">
@@ -83,7 +88,7 @@ export function ProductCard({
             disabled={product.status === "inactive"}
             onClick={(e) => {
               e.stopPropagation();
-              onAddToCart(product);
+              onViewDetails(product);
             }}
           >
             <ShoppingCart className="h-4 w-4 mr-2" />
