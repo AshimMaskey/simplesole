@@ -1,40 +1,21 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
-import { Star } from "lucide-react";
-import { ReviewByProduct } from "../actions/reviews";
+import { Edit2, Star, Trash2 } from "lucide-react";
+import { deleteReview, ReviewByProduct } from "../actions/reviews";
+import { Button } from "@/components/ui/button";
+import { useUser } from "@clerk/nextjs";
+import { ReviewDialog } from "@/components/dialog/review-dialog";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 
 interface TabsSectionProps {
   description: string | null;
   reviews: ReviewByProduct[];
+  productId: string;
 }
-
-const mockReviews = [
-  {
-    id: 1,
-    user: "Alice Johnson",
-    comment:
-      "Great product! Really comfortable and fits perfectly. The quality exceeded my expectations.",
-    rating: 5,
-    date: "2024-01-15",
-  },
-  {
-    id: 2,
-    user: "Bob Smith",
-    comment:
-      "Good quality material, but the color was slightly different from the pictures. Still happy with the purchase.",
-    rating: 4,
-    date: "2024-01-12",
-  },
-  {
-    id: 3,
-    user: "Charlie Brown",
-    comment:
-      "Average product, expected better material for the price. The design is nice though.",
-    rating: 3,
-    date: "2024-01-08",
-  },
-];
 
 const StarRating = ({ rating }: { rating: number }) => {
   return (
@@ -53,15 +34,36 @@ const StarRating = ({ rating }: { rating: number }) => {
   );
 };
 
-const TabsSection = ({ description, reviews }: TabsSectionProps) => {
+const TabsSection = ({ description, reviews, productId }: TabsSectionProps) => {
+  const { user: clerkUser } = useUser();
+  const router = useRouter();
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+
+  const handleDelete = async (id: string) => {
+    const confirm = window.confirm(
+      "Are you sure you want to delete this review?"
+    );
+    if (!confirm) return;
+
+    try {
+      setIsDeleting(id);
+      await deleteReview(id);
+      toast.success("Review deleted successfully!");
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete review.");
+    } finally {
+      setIsDeleting(null);
+    }
+  };
   const averageRating =
-    mockReviews.reduce((acc, review) => acc + review.rating, 0) /
-    mockReviews.length;
+    reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
 
   return (
-    <div className="mt-12 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="mt-12 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-15">
       <Tabs defaultValue="description" className="w-full">
-        <TabsList className="flex w-full border-b border-gray-200 mb-8">
+        <TabsList className="flex w-full border rounded-lg border-gray-200 mb-8">
           <TabsTrigger
             value="description"
             className="flex-1 cursor-pointer px-6 py-4 font-semibold text-gray-600 data-[state=active]:text-blue-600 data-[state=active]:border-b-2 data-[state=active]:border-blue-600 transition-all duration-200 hover:text-gray-900"
@@ -74,7 +76,7 @@ const TabsSection = ({ description, reviews }: TabsSectionProps) => {
           >
             Reviews
             <span className="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full min-w-6">
-              {mockReviews.length}
+              {reviews.length}
             </span>
           </TabsTrigger>
         </TabsList>
@@ -101,65 +103,104 @@ const TabsSection = ({ description, reviews }: TabsSectionProps) => {
         {/* REVIEWS */}
         <TabsContent value="reviews" className="focus:outline-none">
           <div className="space-y-8">
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
-              <div className="text-center md:text-left">
-                <div className="text-3xl font-bold text-gray-900">
-                  {averageRating.toFixed(1)}
+            {reviews.length > 0 && (
+              <div className="flex flex-col md:flex-row items-center md:items-center gap-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
+                <div className="text-center md:text-left">
+                  <div className="text-3xl font-bold text-gray-900">
+                    {averageRating.toFixed(1)}
+                  </div>
+                  <StarRating rating={Math.round(averageRating)} />
+                  <div className="text-sm text-gray-600 mt-1">
+                    {reviews.length} reviews
+                  </div>
+                  <div className="mt-4 md:mt-4">
+                    <ReviewDialog
+                      productId={productId}
+                      onSuccess={() => {
+                        router.refresh();
+                      }}
+                      triggerLabel="Add Review"
+                    />
+                  </div>
                 </div>
-                <StarRating rating={Math.round(averageRating)} />
-                <div className="text-sm text-gray-600 mt-1">
-                  {mockReviews.length} reviews
-                </div>
-              </div>
-              <div className="flex-1 w-full">
-                <div className="space-y-2">
-                  {[5, 4, 3, 2, 1].map((rating) => {
-                    const count = mockReviews.filter(
-                      (r) => r.rating === rating
-                    ).length;
-                    const percentage = (count / mockReviews.length) * 100;
-                    return (
-                      <div
-                        key={rating}
-                        className="flex items-center gap-2 text-sm"
-                      >
-                        <span className="w-8 text-gray-600">{rating}</span>
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <div className="flex-1 bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-yellow-400 h-2 rounded-full"
-                            style={{ width: `${percentage}%` }}
-                          ></div>
+
+                <div className="flex-1 w-full">
+                  <div className="space-y-2">
+                    {[5, 4, 3, 2, 1].map((rating) => {
+                      const count = reviews.filter(
+                        (r) => r.rating === rating
+                      ).length;
+                      const percentage = (count / reviews.length) * 100;
+                      return (
+                        <div
+                          key={rating}
+                          className="flex items-center gap-2 text-sm"
+                        >
+                          <span className="w-8 text-gray-600">{rating}</span>
+                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                          <div className="flex-1 bg-gray-200 rounded-full h-2">
+                            <div
+                              className="bg-yellow-400 h-2 rounded-full"
+                              style={{ width: `${percentage}%` }}
+                            ></div>
+                          </div>
+                          <span className="w-8 text-gray-600 text-right">
+                            {count}
+                          </span>
                         </div>
-                        <span className="w-8 text-gray-600 text-right">
-                          {count}
-                        </span>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             <div className="space-y-6">
-              {mockReviews.map((review) => (
+              {reviews.map((review) => (
                 <div
                   key={review.id}
-                  className="border border-gray-200 p-6 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow duration-200"
+                  className="border border-gray-200 p-6 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow duration-200 relative"
                 >
                   <div className="flex items-start justify-between mb-3">
+                    {/* User Info */}
                     <div>
                       <div className="font-semibold text-gray-900">
-                        {review.user}
+                        {review.user.fullName || "Anonymous"}
                       </div>
                       <div className="flex items-center gap-2 mt-1">
                         <StarRating rating={review.rating} />
                         <span className="text-sm text-gray-500">
-                          {new Date(review.date).toLocaleDateString()}
+                          {new Date(review.createdAt).toLocaleDateString()}
                         </span>
                       </div>
                     </div>
+
+                    {/* Edit/Delete Buttons */}
+                    {review.user.id.trim() ==
+                      (clerkUser?.id || "placeholder") && (
+                      <div className="flex gap-1">
+                        <ReviewDialog
+                          productId={productId}
+                          initialData={review}
+                          onSuccess={() => router.refresh()}
+                          triggerLabel={"Edit Review"}
+                        />
+                        <button
+                          onClick={() => handleDelete(review.id)}
+                          disabled={isDeleting === review.id}
+                          className="text-gray-500 cursor-pointer p-2 hover:bg-red-100 rounded-xl hover:text-red-600 transition-colors"
+                        >
+                          {isDeleting === review.id ? (
+                            <Spinner className="h-4 w-4" />
+                          ) : (
+                            <Trash2 className="w-4 h-4" />
+                          )}
+                        </button>
+                      </div>
+                    )}
                   </div>
+
+                  {/* Comment */}
                   <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
                     {review.comment}
                   </p>
@@ -167,13 +208,22 @@ const TabsSection = ({ description, reviews }: TabsSectionProps) => {
               ))}
             </div>
 
-            {mockReviews.length === 0 && (
+            {reviews.length === 0 && (
               <div className="text-center py-12">
                 <div className="text-gray-400 text-6xl mb-4">💬</div>
                 <p className="text-gray-500 text-lg">No reviews yet</p>
                 <p className="text-gray-400 text-sm mt-2">
                   Be the first to share your thoughts!
                 </p>
+                <div className="w-full flex justify-center mt-3">
+                  <ReviewDialog
+                    productId={productId}
+                    onSuccess={() => {
+                      router.refresh();
+                    }}
+                    triggerLabel="Add Review"
+                  />
+                </div>
               </div>
             )}
           </div>

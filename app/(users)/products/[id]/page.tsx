@@ -12,8 +12,7 @@ export default async function ProductDetailsPage({
 
   const product = await getProductById(id);
 
-  // const reviews = await getReviewsByProduct(id);
-  const reviews = [];
+  const reviews = await getReviewsByProduct(id);
 
   if (!product) {
     return (
@@ -24,7 +23,7 @@ export default async function ProductDetailsPage({
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6 flex flex-col gap-12">
+    <div className="max-w-6xl mx-auto p-6 mt-5 flex flex-col gap-12">
       {/* Top Section: Image + Product Info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="w-full">
@@ -39,6 +38,11 @@ export default async function ProductDetailsPage({
           <div>
             <h3 className="font-semibold mb-2">Available Variants:-</h3>
             <div className="flex gap-3 overflow-x-auto py-2">
+              {product.variants.length === 0 ? (
+                <div>
+                  <h1 className="text-red-500">No Variants! :(</h1>
+                </div>
+              ) : null}
               {product.variants.map((v) => (
                 <div
                   key={v.id}
@@ -64,7 +68,11 @@ export default async function ProductDetailsPage({
 
       {/* Full Width Tabs Section */}
       <div className="w-full">
-        <TabsSection description={product.description} reviews={reviews} />
+        <TabsSection
+          description={product.description}
+          reviews={reviews}
+          productId={product.id}
+        />
       </div>
     </div>
   );

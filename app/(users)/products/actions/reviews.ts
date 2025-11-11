@@ -21,6 +21,7 @@ export interface ReviewByProduct {
   comment: string;
   createdAt: Date;
   user: {
+    id: string;
     fullName: string | null;
   };
 }
@@ -53,7 +54,6 @@ export async function getReviewById(id: string) {
 export async function getReviewsByProduct(
   productId: string
 ): Promise<ReviewByProduct[]> {
-  console.log(productId);
   const reviews = await prisma.review.findMany({
     where: { productId },
     select: {
@@ -63,13 +63,14 @@ export async function getReviewsByProduct(
       createdAt: true,
       user: {
         select: {
+          id: true,
           fullName: true,
         },
       },
     },
     orderBy: { createdAt: "desc" },
   });
-  console.log(reviews);
+
   return reviews;
 }
 
