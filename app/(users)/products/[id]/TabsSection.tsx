@@ -2,6 +2,12 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { Star } from "lucide-react";
+import { ReviewByProduct } from "../actions/reviews";
+
+interface TabsSectionProps {
+  description: string | null;
+  reviews: ReviewByProduct[];
+}
 
 const mockReviews = [
   {
@@ -47,7 +53,7 @@ const StarRating = ({ rating }: { rating: number }) => {
   );
 };
 
-const TabsSection = ({ description }: { description: string | null }) => {
+const TabsSection = ({ description, reviews }: TabsSectionProps) => {
   const averageRating =
     mockReviews.reduce((acc, review) => acc + review.rating, 0) /
     mockReviews.length;

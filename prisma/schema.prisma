@@ -1,11 +1,6 @@
-// generator client {
-//   provider = "prisma-client-js"
-//   output   = "../app/generated/prisma"
-// }
 generator client {
   provider = "prisma-client-js"
 }
-
 
 datasource db {
   provider = "postgresql"
@@ -27,7 +22,8 @@ model User {
   image_url  String?
   phone      String?
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt                   
+  updatedAt  DateTime @updatedAt 
+  reviews Review[]                  
 }
 
 model Product {
@@ -41,6 +37,7 @@ model Product {
   images      String[]  
   created_at  DateTime  @default(now())
   variants    ProductVariant[]
+  reviews Review[]
   @@index([category])
 }
 
@@ -52,4 +49,19 @@ model ProductVariant {
   sku       String
   product   Product @relation(fields: [productId], references: [id])
   productId String
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int     
+  comment   String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
+  @@index([userId])
 }

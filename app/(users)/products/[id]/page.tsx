@@ -1,4 +1,5 @@
 import { getProductById } from "../actions/products";
+import { getReviewsByProduct } from "../actions/reviews";
 import ImageGallery from "./ImageGallery";
 import TabsSection from "./TabsSection";
 
@@ -10,7 +11,9 @@ export default async function ProductDetailsPage({
   const { id } = await params;
 
   const product = await getProductById(id);
-  console.log(product);
+
+  // const reviews = await getReviewsByProduct(id);
+  const reviews = [];
 
   if (!product) {
     return (
@@ -61,7 +64,7 @@ export default async function ProductDetailsPage({
 
       {/* Full Width Tabs Section */}
       <div className="w-full">
-        <TabsSection description={product.description} />
+        <TabsSection description={product.description} reviews={reviews} />
       </div>
     </div>
   );
