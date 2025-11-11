@@ -47,14 +47,25 @@
 // };
 
 // export default Home;
+"use client";
 
 import BrandStory from "@/components/homepage/brand-story";
 import FeaturedCollections from "@/components/homepage/featured-collections";
 import Herosection from "@/components/homepage/herosection/Herosection";
 import PopularProducts from "@/components/homepage/popular-products";
-import React from "react";
+import { useUser } from "@clerk/nextjs";
+import React, { useEffect } from "react";
+import { syncUserToDB } from "../actions/userActions";
 
 const Home = () => {
+  const { isSignedIn } = useUser();
+
+  useEffect(() => {
+    if (isSignedIn) {
+      syncUserToDB();
+    }
+  }, [isSignedIn]);
+
   return (
     <main>
       <Herosection />

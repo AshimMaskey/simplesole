@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import NextTopLoader from "nextjs-toploader";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
@@ -27,11 +28,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider signInUrl="/signin" signUpUrl="/signup" afterSignOutUrl="/">
+    <ClerkProvider
+      signInUrl="/signin"
+      signUpUrl="/signup"
+      afterSignInUrl={"/"}
+      afterSignOutUrl="/"
+    >
       <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
+          <NextTopLoader
+            color="#3b82f6"
+            initialPosition={0.08}
+            crawlSpeed={200}
+            height={4}
+            showSpinner={false}
+          />
           <div className="flex flex-col min-h-screen">
             {" "}
             <Navbar />
