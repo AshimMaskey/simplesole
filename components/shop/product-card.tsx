@@ -27,7 +27,6 @@ export function ProductCard({
       className="group overflow-hidden transition-all duration-300 ease-in-out hover:shadow-lg cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => onViewDetails(product)}
     >
       <CardContent className="p-0">
         <div className="relative aspect-square overflow-hidden bg-muted">
