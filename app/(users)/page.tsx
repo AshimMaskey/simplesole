@@ -47,24 +47,26 @@
 // };
 
 // export default Home;
-"use client";
+// "use client";
 
 import BrandStory from "@/components/homepage/brand-story";
 import FeaturedCollections from "@/components/homepage/featured-collections";
 import Herosection from "@/components/homepage/herosection/Herosection";
 import PopularProducts from "@/components/homepage/popular-products";
-import { useUser } from "@clerk/nextjs";
-import React, { useEffect } from "react";
-import { syncUserToDB } from "../actions/userActions";
+// import { useUser } from "@clerk/nextjs";
+// import React, { useEffect } from "react";
+// import { syncUserToDB } from "../actions/userActions";
+import { checkUser } from "@/lib/check-user";
 
-const Home = () => {
-  const { isSignedIn } = useUser();
+const Home = async () => {
+  const user = await checkUser();
+  // const { isSignedIn } = useUser();
 
-  useEffect(() => {
-    if (isSignedIn) {
-      syncUserToDB();
-    }
-  }, [isSignedIn]);
+  // useEffect(() => {
+  //   if (isSignedIn) {
+  //     syncUserToDB();
+  //   }
+  // }, [isSignedIn]);
 
   return (
     <main>

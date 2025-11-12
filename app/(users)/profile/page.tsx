@@ -25,13 +25,13 @@ import { syncUserToDB } from "@/app/actions/userActions";
 import { SignedIn } from "@clerk/clerk-react";
 
 export default function ProfilePage() {
-  const { isSignedIn } = useUser();
+  // const { isSignedIn } = useUser();
 
-  useEffect(() => {
-    if (isSignedIn) {
-      syncUserToDB();
-    }
-  }, [isSignedIn]);
+  // useEffect(() => {
+  //   if (isSignedIn) {
+  //     syncUserToDB();
+  //   }
+  // }, [isSignedIn]);
   const totalSpent = mockOrders.reduce((sum, order) => sum + order.total, 0);
   const wishlistCount = 5; // Mock wishlist count
 
