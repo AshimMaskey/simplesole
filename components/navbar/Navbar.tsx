@@ -11,13 +11,9 @@ import { Button } from "../ui/button";
 import { Heart, Menu, Search, ShoppingCart, UserRound, X } from "lucide-react";
 
 import { NavigationMenuDemo } from "./NavMenu";
-import { getWishlistCount } from "@/app/(users)/wishlist/actions/wishlist";
 import { useWishlist } from "@/contexts/WishlistContext";
 
 const Navbar = () => {
-  // const [wishlistCount, setWishlistCount] = useState<number>(0);
-  // console.log(wishlistCount);
-  // const { user } = useUser();
   const { isSignedIn } = useUser();
   const router = useRouter();
 
@@ -71,9 +67,12 @@ const Navbar = () => {
             </div>
 
             {/* CART */}
-            <Link href="/cart">
+            <Link href="/cart" className="relative">
               <Button variant="ghost" size="icon">
                 <ShoppingCart />
+                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-semibold rounded-full px-[6px] py-[1px]">
+                  {wishlistCount}
+                </span>
               </Button>
             </Link>
 
