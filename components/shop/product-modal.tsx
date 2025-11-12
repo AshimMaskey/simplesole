@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Product } from "@/types/product";
+import type { Product, ProductVariant } from "@/types/product";
 import { ShoppingCart, Package } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -28,6 +28,7 @@ interface ProductModalProps {
   product: Product | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onAddToCart: (product: Product, variant?: ProductVariant) => void;
 }
 
 export function ProductModal({
