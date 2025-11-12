@@ -62,7 +62,8 @@
 // }
 "use server";
 
-import { prisma } from "@/lib/prisma";
+// import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import type { Product, ProductVariant } from "@/types/product";
 
 export async function saveProduct(
