@@ -125,10 +125,10 @@ export default function CartPage() {
             Continue Shopping
           </Button>
         </Link>
-        <div>
-          <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold">Shopping Cart</h1>
           {cartItems.length > 0 && (
-            <div className="flex justify-end mb-4">
+            <div>
               <Button
                 variant="destructive"
                 onClick={handleRemoveAll}
