@@ -204,7 +204,6 @@ export default function SearchPage() {
         product={selectedProduct}
         open={modalOpen}
         onOpenChange={setModalOpen}
-        onAddToCart={handleAddToCart}
       />
     </div>
   );

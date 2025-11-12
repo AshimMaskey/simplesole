@@ -28,7 +28,6 @@ interface ProductModalProps {
   product: Product | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAddToCart: (product: Product, variant?: ProductVariant) => void;
 }
 
 export function ProductModal({
