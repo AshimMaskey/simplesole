@@ -4,48 +4,47 @@ import Image from "next/image";
 import { Heart, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import type { WishlistItem } from "@/types/product";
+import { WishlistByUserItem } from "@/types/wishlist";
+import Link from "next/link";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
 
 interface WishlistCardProps {
-  item: WishlistItem;
-  onRemove: (id: string) => void;
-  onAddToCart: (productId: string) => void;
+  item: WishlistByUserItem;
+  onRemove: (wishlistId: string, productId: string) => Promise<void>;
 }
 
-export function WishlistCard({
-  item,
-  onRemove,
-  onAddToCart,
-}: WishlistCardProps) {
-  const { product } = item;
-  const isOutOfStock = product.total_stock === 0;
+export function WishlistCard({ item, onRemove }: WishlistCardProps) {
+  const [removing, setRemoving] = useState(false);
+
+  const handleRemove = async () => {
+    setRemoving(true);
+    await onRemove(item.id, item.product.id);
+    setRemoving(false);
+  };
 
   return (
     <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300">
       {/* Product Image */}
-      <div className="relative aspect-square overflow-hidden bg-muted">
+      <div className="relative w-full h-48 overflow-hidden bg-muted rounded-md">
         <Image
-          src={product.images[0] || "/placeholder.svg"}
-          alt={product.name}
+          src={item.product.images[0] || "/placeholder.svg"}
+          alt={item.product.name}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"
         />
-        {isOutOfStock && (
-          <Badge
-            variant="secondary"
-            className="absolute top-3 left-3 bg-background/90 backdrop-blur-sm"
-          >
-            Out of Stock
-          </Badge>
-        )}
         <Button
           variant="ghost"
           size="icon"
           className="absolute top-3 right-3 bg-background/90 backdrop-blur-sm hover:bg-background"
-          onClick={() => onRemove(item.id)}
+          onClick={handleRemove}
+          disabled={removing}
         >
-          <Heart className="h-5 w-5 fill-destructive text-destructive" />
+          {removing ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <Heart className="h-5 w-5 fill-destructive text-destructive" />
+          )}
         </Button>
       </div>
 
@@ -53,30 +52,28 @@ export function WishlistCard({
       <div className="p-4">
         <div className="mb-3">
           <h3 className="font-semibold text-lg text-balance mb-1">
-            {product.name}
+            {item.product.name}
           </h3>
           <p className="text-sm text-muted-foreground line-clamp-2">
-            {product.description}
+            {item.product.description}
           </p>
         </div>
 
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm text-muted-foreground">
-            {product.category}
+            {item.product.category}
           </span>
           <span className="font-semibold text-lg">
-            ${product.base_price.toFixed(2)}
+            ${item.product.base_price.toFixed(2)}
           </span>
         </div>
 
-        <Button
-          className="w-full"
-          onClick={() => onAddToCart(product.id)}
-          disabled={isOutOfStock}
-        >
-          <ShoppingCart className="h-4 w-4 mr-2" />
-          {isOutOfStock ? "Out of Stock" : "View Details"}
-        </Button>
+        <Link href={`/products/${item.product.id}`}>
+          <Button className="w-full">
+            <ShoppingCart className="h-4 w-4 mr-2" />
+            View Details
+          </Button>
+        </Link>
       </div>
     </Card>
   );

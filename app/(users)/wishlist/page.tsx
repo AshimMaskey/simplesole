@@ -1,27 +1,65 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Heart } from "lucide-react";
+import { ArrowLeft, Heart, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { WishlistCard } from "@/components/card/wishlist-card";
-import { mockWishlistItems } from "@/lib/mock-card-data";
-import type { WishlistItem } from "@/types/product";
 import toast from "react-hot-toast";
 
+import {
+  getWishlistByUser,
+  removeFromWishlist,
+} from "@/app/(users)/wishlist/actions/wishlist";
+import { useUser } from "@clerk/nextjs";
+import { WishlistByUserItem } from "@/types/wishlist";
+import { useWishlist } from "@/contexts/WishlistContext";
+
 export default function WishlistPage() {
-  const [wishlistItems, setWishlistItems] =
-    useState<WishlistItem[]>(mockWishlistItems);
+  const [wishlistItems, setWishlistItems] = useState<WishlistByUserItem[] | []>(
+    []
+  );
+  const { refreshCount } = useWishlist();
+  const { user } = useUser();
+  const userId = user?.id;
+  const [loading, setLoading] = useState(true);
 
-  const handleRemove = (id: string) => {
-    setWishlistItems((items) => items.filter((item) => item.id !== id));
+  useEffect(() => {
+    if (!userId) return;
 
-    toast.success("Item has been removed from your wishlist");
+    async function fetchWishlist() {
+      setLoading(true);
+      const res = await getWishlistByUser(userId || "fallback");
+      if (res.success && res.data) {
+        setWishlistItems(res.data);
+      } else {
+        toast.error(res.error || "Failed to load wishlist");
+      }
+      setLoading(false);
+    }
+
+    fetchWishlist();
+  }, [userId]);
+
+  const handleRemove = async (id: string, productId: string) => {
+    const res = await removeFromWishlist(userId || "fallback", productId);
+    if (res.success) {
+      refreshCount();
+      setWishlistItems((items) => items.filter((item) => item.id !== id));
+      toast.success("Item removed from wishlist");
+    } else {
+      toast.error(res.error || "Failed to remove item");
+    }
   };
 
-  const handleAddToCart = (productId: string) => {
-    toast.success("Item has been added to your cart");
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center gap-3">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-muted-foreground">Loading wishlist...</p>
+      </div>
+    );
+  }
 
   if (wishlistItems.length === 0) {
     return (
@@ -43,7 +81,7 @@ export default function WishlistPage() {
               Save your favorite items to your wishlist so you can easily find
               them later!
             </p>
-            <Link href="/">
+            <Link href="/shop">
               <Button size="lg">Start Shopping</Button>
             </Link>
           </div>
@@ -55,7 +93,7 @@ export default function WishlistPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        <Link href="/">
+        <Link href="/shop">
           <Button variant="ghost" className="mb-6">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Continue Shopping
@@ -72,12 +110,7 @@ export default function WishlistPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {wishlistItems.map((item) => (
-            <WishlistCard
-              key={item.id}
-              item={item}
-              onRemove={handleRemove}
-              onAddToCart={handleAddToCart}
-            />
+            <WishlistCard key={item.id} item={item} onRemove={handleRemove} />
           ))}
         </div>
       </div>

@@ -55,7 +55,7 @@ export default function WishlistButton({ productId }: WishlistButtonProps) {
         if (res.success) {
           setIsWishlisted(false);
           toast.success("Removed from wishlist");
-          refreshCount(); // ✅ refresh badge
+          refreshCount();
         } else {
           toast.error(res.error || "Failed to remove from wishlist");
         }
@@ -64,7 +64,7 @@ export default function WishlistButton({ productId }: WishlistButtonProps) {
         if (res.success) {
           setIsWishlisted(true);
           toast.success("Added to wishlist");
-          refreshCount(); // ✅ refresh badge
+          refreshCount();
         } else {
           toast.error(res.error || "Failed to add to wishlist");
         }
