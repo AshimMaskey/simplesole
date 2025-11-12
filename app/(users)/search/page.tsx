@@ -1,8 +1,7 @@
 "use client";
 
 import type React from "react";
-
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/shop/product-card";
 import { ProductModal } from "@/components/shop/product-modal";
@@ -16,71 +15,40 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { mockProducts } from "@/lib/mock-data";
 import type { Product, ProductVariant } from "@/types/product";
-import { Search, X, Package } from "lucide-react";
+import { Search, X, Package, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { searchProducts } from "./actions/search";
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [sortBy, setSortBy] = useState("relevance");
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
+  // ⏳ Debounce timer
   useEffect(() => {
-    const query = searchParams.get("q");
-    if (query) {
-      setSearchQuery(query);
-    }
-  }, [searchParams]);
+    const query = searchQuery.trim();
 
-  const searchResults = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return [];
+    if (query.length < 3) {
+      setSearchResults([]);
+      return;
     }
 
-    const query = searchQuery.toLowerCase();
-    const results = mockProducts.filter(
-      (product) =>
-        product.name.toLowerCase().includes(query) ||
-        product.description?.toLowerCase().includes(query) ||
-        product.category.toLowerCase().includes(query)
-    );
+    const timeoutId = setTimeout(() => {
+      startTransition(async () => {
+        const results = await searchProducts(query, sortBy);
+        setSearchResults(results);
+      });
+    }, 400); // wait 400ms after user stops typing
 
-    // Sorting
-    switch (sortBy) {
-      case "price-low":
-        results.sort((a, b) => a.base_price - b.base_price);
-        break;
-      case "price-high":
-        results.sort((a, b) => b.base_price - a.base_price);
-        break;
-      case "newest":
-        results.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
-        break;
-      case "relevance":
-      default:
-        // Sort by relevance (name match > description match)
-        results.sort((a, b) => {
-          const aNameMatch = a.name.toLowerCase().includes(query) ? 1 : 0;
-          const bNameMatch = b.name.toLowerCase().includes(query) ? 1 : 0;
-          return bNameMatch - aNameMatch;
-        });
-        break;
-    }
-
-    return results;
+    return () => clearTimeout(timeoutId);
   }, [searchQuery, sortBy]);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Search is reactive, form submission just focuses out
-  };
-
-  const handleClearSearch = () => {
-    setSearchQuery("");
-  };
+  const handleClearSearch = () => setSearchQuery("");
 
   const handleViewDetails = (product: Product) => {
     setSelectedProduct(product);
@@ -91,32 +59,30 @@ export default function SearchPage() {
     const variantInfo = variant
       ? ` (Size: ${variant.size}, Color: ${variant.color})`
       : "";
-
     toast.success(`${product.name}${variantInfo} has been added to your cart.`);
   };
 
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        {/* Search Header */}
+        {/* Header */}
         <div className="mb-8 space-y-6">
           <div>
             <h1 className="text-4xl font-bold mb-2 text-balance">Search</h1>
-            <p className="text-muted-foreground text-pretty">
+            <p className="text-muted-foreground">
               Find your perfect pair from our collection
             </p>
           </div>
 
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="flex gap-2">
+          <div className="flex gap-2">
             <div className="relative flex-1 max-w-2xl">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
-                placeholder="Search for shoes by name, category, or description..."
+                placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 pr-10 h-12 text-base"
-                autoFocus
               />
               {searchQuery && (
                 <Button
@@ -130,15 +96,20 @@ export default function SearchPage() {
                 </Button>
               )}
             </div>
-          </form>
+          </div>
 
-          {/* Search Info Bar */}
+          {/* Search Info */}
           {searchQuery && (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm text-muted-foreground">
-                  {searchResults.length}{" "}
-                  {searchResults.length === 1 ? "result" : "results"} for
+                  {searchQuery.length < 3
+                    ? "Type at least 3 characters"
+                    : isPending
+                    ? "Searching..."
+                    : `${searchResults.length} result${
+                        searchResults.length === 1 ? "" : "s"
+                      } for`}
                 </span>
                 <Badge variant="secondary" className="text-sm">
                   {searchQuery}
@@ -172,36 +143,49 @@ export default function SearchPage() {
           )}
         </div>
 
-        {/* Search Results */}
-        {!searchQuery ? (
-          // Empty State - No Search Query
+        {/* Results */}
+        {isPending ? (
+          <div className="flex justify-center items-center gap-3 py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-muted-foreground">Searching...</p>
+          </div>
+        ) : !searchQuery ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <div className="rounded-full bg-muted p-6 mb-4">
               <Search className="h-12 w-12 text-muted-foreground" />
             </div>
             <h2 className="text-2xl font-semibold mb-2">Start your search</h2>
-            <p className="text-muted-foreground max-w-md text-pretty">
+            <p className="text-muted-foreground max-w-md">
               Enter a product name, category, or description to find what
-              you&apos;re looking for
+              you&apos;re looking for.
+            </p>
+          </div>
+        ) : searchQuery.length > 0 && searchQuery.length < 3 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="rounded-full bg-muted p-6 mb-4">
+              <Search className="h-12 w-12 text-muted-foreground" />
+            </div>
+            <h2 className="text-2xl font-semibold mb-2">Keep typing...</h2>
+            <p className="text-muted-foreground max-w-md">
+              Enter at least <span className="font-medium">3 characters</span>{" "}
+              to start searching.
             </p>
           </div>
         ) : searchResults.length === 0 ? (
-          // Empty State - No Results
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <div className="rounded-full bg-muted p-6 mb-4">
               <Package className="h-12 w-12 text-muted-foreground" />
             </div>
             <h2 className="text-2xl font-semibold mb-2">No results found</h2>
-            <p className="text-muted-foreground max-w-md mb-6 text-pretty">
+            <p className="text-muted-foreground max-w-md mb-6">
               We couldn&apos;t find any products matching &quot;{searchQuery}
-              &quot;. Try different keywords or browse our categories.
+              &quot;.
             </p>
             <Button onClick={handleClearSearch} variant="outline">
               Clear search
             </Button>
           </div>
         ) : (
-          // Results Grid
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {searchResults.map((product) => (
               <ProductCard
