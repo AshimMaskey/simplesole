@@ -15,11 +15,7 @@ interface ProductCardProps {
   onAddToCart: (product: Product) => void;
 }
 
-export function ProductCard({
-  product,
-  onViewDetails,
-  onAddToCart,
-}: ProductCardProps) {
+export function ProductCard({ product, onViewDetails }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (

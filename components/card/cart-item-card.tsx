@@ -1,24 +1,32 @@
 "use client";
 
 import Image from "next/image";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { Minus, Plus, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import type { CartItem } from "@/types/product";
+import type { CartItem } from "@/types/cart";
 
 interface CartItemCardProps {
   item: CartItem;
-  onUpdateQuantity: (id: string, quantity: number) => void;
-  onRemove: (id: string) => void;
+  onIncrease: () => void;
+  onDecrease: () => void;
+  onRemove: () => void;
+  loadingIncrease?: boolean;
+  loadingDecrease?: boolean;
+  loadingDelete?: boolean;
 }
 
 export function CartItemCard({
   item,
-  onUpdateQuantity,
+  onIncrease,
+  onDecrease,
   onRemove,
+  loadingIncrease = false,
+  loadingDecrease = false,
+  loadingDelete = false,
 }: CartItemCardProps) {
-  const { product, variant, quantity } = item;
-  const itemTotal = product.base_price * quantity;
+  const { variant, quantity } = item;
+  const itemTotal = variant.product.base_price * quantity;
 
   return (
     <Card className="p-4 hover:shadow-md transition-shadow">
@@ -26,8 +34,8 @@ export function CartItemCard({
         {/* Product Image */}
         <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
           <Image
-            src={product.images[0] || "/placeholder.svg"}
-            alt={product.name}
+            src={variant.product.images[0] || "/placeholder.svg"}
+            alt={variant.product.name}
             fill
             className="object-cover"
           />
@@ -38,10 +46,10 @@ export function CartItemCard({
           <div className="flex justify-between gap-4">
             <div className="flex-1">
               <h3 className="font-semibold text-lg text-balance">
-                {product.name}
+                {variant.product.name}
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
-                {product.category}
+                {variant.product.category}
               </p>
               <div className="flex gap-3 mt-2 text-sm">
                 <span className="text-muted-foreground">
@@ -64,7 +72,7 @@ export function CartItemCard({
               <p className="font-semibold text-lg">${itemTotal.toFixed(2)}</p>
               {quantity > 1 && (
                 <p className="text-sm text-muted-foreground">
-                  ${product.base_price.toFixed(2)} each
+                  ${variant.product.base_price.toFixed(2)} each
                 </p>
               )}
             </div>
@@ -77,33 +85,47 @@ export function CartItemCard({
                 variant="outline"
                 size="icon"
                 className="h-8 w-8 bg-transparent"
-                onClick={() =>
-                  onUpdateQuantity(item.id, Math.max(1, quantity - 1))
-                }
-                disabled={quantity <= 1}
+                onClick={onDecrease}
+                disabled={quantity <= 1 || loadingDecrease}
               >
-                <Minus className="h-4 w-4" />
+                {loadingDecrease ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Minus className="h-4 w-4" />
+                )}
               </Button>
+
               <span className="w-12 text-center font-medium">{quantity}</span>
+
               <Button
                 variant="outline"
                 size="icon"
                 className="h-8 w-8 bg-transparent"
-                onClick={() => onUpdateQuantity(item.id, quantity + 1)}
-                disabled={quantity >= variant.stock}
+                onClick={onIncrease}
+                disabled={quantity >= variant.stock || loadingIncrease}
               >
-                <Plus className="h-4 w-4" />
+                {loadingIncrease ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Plus className="h-4 w-4" />
+                )}
               </Button>
             </div>
 
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => onRemove(item.id)}
+              onClick={onRemove}
               className="text-destructive hover:text-destructive hover:bg-destructive/10"
+              disabled={loadingDelete}
             >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Remove
+              {loadingDelete ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <Trash2 className="h-4 w-4 mr-2" /> Remove
+                </>
+              )}
             </Button>
           </div>
         </div>

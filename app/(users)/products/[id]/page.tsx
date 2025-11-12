@@ -1,4 +1,4 @@
-import { ChevronLeft, Heart } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { getProductById } from "../actions/products";
 import { getReviewsByProduct } from "../actions/reviews";
 import ImageGallery from "./ImageGallery";
@@ -6,6 +6,7 @@ import TabsSection from "./TabsSection";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import WishlistButton from "@/components/wishlist/WishlistButton";
+import AddToCart from "./AddToCart";
 
 export default async function ProductDetailsPage({
   params,
@@ -72,9 +73,7 @@ export default async function ProductDetailsPage({
             </div>
           </div>
           <div className="w-full flex items-center gap-3">
-            <button className="bg-black cursor-pointer flex-1 text-white px-6 py-3 rounded-lg hover:opacity-80 transition">
-              Add to Cart
-            </button>
+            <AddToCart product={product} />
             <WishlistButton productId={product.id} />
           </div>
         </div>

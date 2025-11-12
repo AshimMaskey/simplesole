@@ -17,12 +17,17 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import type { Product, ProductVariant, Filters } from "@/types/product";
 import { Search, SlidersHorizontal } from "lucide-react";
 import toast from "react-hot-toast";
+import { addToCart } from "../cart/actions/cart";
+import { useUser } from "@clerk/nextjs";
 
 export default function ShopClient({
   initialProducts,
 }: {
   initialProducts: Product[];
 }) {
+  const { user } = useUser();
+  const userId = user?.id;
+  console.log(userId);
   const [filters, setFilters] = useState<Filters>({
     categories: [],
     priceRange: [0, 200],
@@ -39,7 +44,6 @@ export default function ShopClient({
 
   const filteredProducts = useMemo(() => {
     let filtered = [...products];
-
     if (filters.search) {
       filtered = filtered.filter(
         (p) =>
@@ -47,35 +51,29 @@ export default function ShopClient({
           p.category.toLowerCase().includes(filters.search.toLowerCase())
       );
     }
-
     if (filters.categories.length > 0) {
       filtered = filtered.filter((p) =>
         filters.categories.includes(p.category)
       );
     }
-
     filtered = filtered.filter(
       (p) =>
         p.base_price >= filters.priceRange[0] &&
         p.base_price <= filters.priceRange[1]
     );
-
     if (filters.status.length > 0) {
       filtered = filtered.filter((p) => filters.status.includes(p.status));
     }
-
     if (filters.sizes.length > 0) {
       filtered = filtered.filter((p) =>
         p.variants?.some((v) => filters.sizes.includes(v.size))
       );
     }
-
     if (filters.colors.length > 0) {
       filtered = filtered.filter((p) =>
         p.variants?.some((v) => filters.colors.includes(v.color))
       );
     }
-
     switch (filters.sortBy) {
       case "price-low":
         filtered.sort((a, b) => a.base_price - b.base_price);
@@ -90,7 +88,6 @@ export default function ShopClient({
         );
         break;
     }
-
     return filtered;
   }, [filters, products]);
 
@@ -99,16 +96,27 @@ export default function ShopClient({
     setModalOpen(true);
   };
 
-  const handleAddToCart = (product: Product, variant?: ProductVariant) => {
-    const variantInfo = variant
-      ? ` (Size: ${variant.size}, Color: ${variant.color})`
-      : "";
-    toast.success(`${product.name}${variantInfo} has been added to your cart.`);
+  const handleAddToCart = async (
+    product: Product,
+    variant?: ProductVariant
+  ) => {
+    if (!variant) return toast.error("Please select a variant.");
+
+    try {
+      await addToCart(userId || "placeholder", variant.id, 1);
+      toast.success(
+        `${product.name} (Size: ${variant.size}, Color: ${variant.color}) added to cart!`
+      );
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to add item to cart.");
+    }
   };
 
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
+        {/* Header and filters */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2 text-balance">Shop</h1>
           <p className="text-muted-foreground text-pretty">
@@ -124,6 +132,7 @@ export default function ShopClient({
           </aside>
 
           <div className="flex-1 space-y-6">
+            {/* Search & Sort */}
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -195,7 +204,6 @@ export default function ShopClient({
         product={selectedProduct}
         open={modalOpen}
         onOpenChange={setModalOpen}
-        onAddToCart={handleAddToCart}
       />
     </div>
   );

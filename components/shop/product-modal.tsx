@@ -17,22 +17,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Product, ProductVariant } from "@/types/product";
+import type { Product } from "@/types/product";
 import { ShoppingCart, Package } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
+import { addToCart } from "@/app/(users)/cart/actions/cart";
+import { useUser } from "@clerk/nextjs";
 
 interface ProductModalProps {
   product: Product | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAddToCart: (product: Product, variant?: ProductVariant) => void;
 }
 
 export function ProductModal({
   product,
   open,
   onOpenChange,
-  onAddToCart,
 }: ProductModalProps) {
+  const { user } = useUser();
+  const userId = user?.id;
+  const [loading, setLoading] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [selectedColor, setSelectedColor] = useState<string>("");
 
@@ -41,6 +46,7 @@ export function ProductModal({
   const availableSizes = [
     ...new Set(product.variants?.map((v) => v.size) || []),
   ];
+
   const availableColors = [
     ...new Set(
       product.variants
@@ -53,10 +59,25 @@ export function ProductModal({
     (v) => v.size === selectedSize && v.color === selectedColor
   );
 
-  const handleAddToCart = () => {
-    onAddToCart(product, selectedVariant);
-    setSelectedSize("");
-    setSelectedColor("");
+  const handleAddToCartClick = async () => {
+    if (!userId) return toast.error("You must be signned in to add to cart.");
+    if (!selectedVariant) return toast.error("Please select a variant.");
+
+    setLoading(true);
+    try {
+      await addToCart(userId, selectedVariant.id, 1);
+      toast.success(
+        `${product.name} (Size: ${selectedVariant.size}, Color: ${selectedVariant.color}) added to cart!`
+      );
+      setSelectedSize("");
+      setSelectedColor("");
+      onOpenChange(false);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to add to cart.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -66,6 +87,7 @@ export function ProductModal({
           <DialogTitle className="text-2xl">{product.name}</DialogTitle>
         </DialogHeader>
         <div className="grid md:grid-cols-2 gap-6">
+          {/* Product Image */}
           <div className="relative aspect-square overflow-hidden rounded-xl bg-muted">
             <Image
               src={product.images[0] || "/placeholder.svg"}
@@ -86,6 +108,7 @@ export function ProductModal({
             </div>
           </div>
 
+          {/* Product Details */}
           <div className="space-y-4">
             <div>
               <p className="text-sm text-muted-foreground mb-1">
@@ -116,6 +139,7 @@ export function ProductModal({
 
             {product.variants && product.variants.length > 0 && (
               <div className="space-y-4">
+                {/* Size Select */}
                 <div>
                   <h4 className="font-semibold mb-2">Select Size</h4>
                   <Select value={selectedSize} onValueChange={setSelectedSize}>
@@ -132,6 +156,7 @@ export function ProductModal({
                   </Select>
                 </div>
 
+                {/* Color Select */}
                 {selectedSize && (
                   <div>
                     <h4 className="font-semibold mb-2">Select Color</h4>
@@ -153,6 +178,7 @@ export function ProductModal({
                   </div>
                 )}
 
+                {/* SKU & Stock */}
                 {selectedVariant && (
                   <div className="p-3 bg-muted rounded-lg">
                     <p className="text-sm">
@@ -168,18 +194,20 @@ export function ProductModal({
               </div>
             )}
 
+            {/* Add to Cart Button */}
             <Button
               className="w-full"
               size="lg"
               disabled={
-                product.status === "inactive" ||
-                (product.variants &&
-                  product.variants.length > 0 &&
-                  !selectedVariant)
+                product.status === "inactive" || !selectedVariant || loading
               }
-              onClick={handleAddToCart}
+              onClick={handleAddToCartClick}
             >
-              <ShoppingCart className="h-5 w-5 mr-2" />
+              {loading ? (
+                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+              ) : (
+                <ShoppingCart className="h-5 w-5 mr-2" />
+              )}
               Add to Cart
             </Button>
           </div>
