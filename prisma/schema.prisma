@@ -23,7 +23,8 @@ model User {
   phone      String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt 
-  reviews Review[]                  
+  reviews Review[] 
+  wishlists    Wishlist[]                 
 }
 
 model Product {
@@ -38,6 +39,7 @@ model Product {
   created_at  DateTime  @default(now())
   variants    ProductVariant[]
   reviews Review[]
+  wishlists    Wishlist[]
   @@index([category])
 }
 
@@ -64,4 +66,15 @@ model Review {
 
   @@index([productId])
   @@index([userId])
+}
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  addedAt   DateTime @default(now())
+
+  @@unique([userId, productId])
 }

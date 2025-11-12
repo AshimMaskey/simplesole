@@ -6,6 +6,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import Navbar from "@/components/navbar/Navbar";
 import Footer from "@/components/footer/Footer";
 import { Toaster } from "react-hot-toast";
+import { WishlistProvider } from "@/contexts/WishlistContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,9 +48,11 @@ export default function RootLayout({
           />
           <div className="flex flex-col min-h-screen">
             {" "}
-            <Navbar />
-            <main className="flex-1 pt-17">{children}</main>
-            <Footer />
+            <WishlistProvider>
+              <Navbar />
+              <main className="flex-1 pt-17">{children}</main>
+              <Footer />
+            </WishlistProvider>
           </div>
         </body>
       </html>

@@ -75,7 +75,7 @@ export function WishlistCard({
           disabled={isOutOfStock}
         >
           <ShoppingCart className="h-4 w-4 mr-2" />
-          {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+          {isOutOfStock ? "Out of Stock" : "View Details"}
         </Button>
       </div>
     </Card>

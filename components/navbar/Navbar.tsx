@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -11,12 +11,27 @@ import { Button } from "../ui/button";
 import { Heart, Menu, Search, ShoppingCart, UserRound, X } from "lucide-react";
 
 import { NavigationMenuDemo } from "./NavMenu";
+import { getWishlistCount } from "@/app/(users)/wishlist/actions/wishlist";
+import { useWishlist } from "@/contexts/WishlistContext";
 
 const Navbar = () => {
+  // const [wishlistCount, setWishlistCount] = useState<number>(0);
+  // console.log(wishlistCount);
+  // const { user } = useUser();
   const { isSignedIn } = useUser();
   const router = useRouter();
 
   const [isOpen, setIsOpen] = useState(false);
+
+  // useEffect(() => {
+  //   const fetchCount = async () => {
+  //     if (!user) return;
+  //     const res = await getWishlistCount(user.id);
+  //     if (res.success) setWishlistCount(res.count || 0);
+  //   };
+  //   fetchCount();
+  // }, [user]);
+  const { count: wishlistCount } = useWishlist();
 
   const handleProfileClick = () => {
     router.push(isSignedIn ? "/profile" : "/login");
@@ -63,10 +78,16 @@ const Navbar = () => {
             </Link>
 
             {/* WISHLIST */}
-            <Link href="/wishlist">
+            {/* WISHLIST */}
+            <Link href="/wishlist" className="relative">
               <Button variant="ghost" size="icon">
                 <Heart />
               </Button>
+
+              {/* Wishlist count badge */}
+              <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-semibold rounded-full px-[6px] py-[1px]">
+                {wishlistCount}
+              </span>
             </Link>
 
             {/* PROFILE */}
