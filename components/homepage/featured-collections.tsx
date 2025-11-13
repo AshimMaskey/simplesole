@@ -25,7 +25,7 @@ export default function FeaturedCollections() {
   ];
 
   return (
-    <section className="py-24 px-4 bg-background">
+    <section id="featured" className="py-24 px-4 bg-background">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-balance">

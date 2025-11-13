@@ -1,17 +1,3 @@
-// "use client";
-// import { SignedIn, UserButton } from "@clerk/nextjs";
-
-// const ProfilePage = () => {
-//   return (
-//     <div>
-//       <SignedIn>
-//         <UserButton />
-//       </SignedIn>
-//     </div>
-//   );
-// };
-
-// export default ProfilePage;
 "use client";
 import { ProfileHeader } from "@/components/profile/profile-header";
 import { ProfileStats } from "@/components/profile/profile-stats";
@@ -20,20 +6,27 @@ import { SavedAddresses } from "@/components/profile/saved-addresses";
 import { mockUser, mockOrders, mockAddresses } from "@/lib/mock-profile-data";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserButton, useUser } from "@clerk/nextjs";
-import { useEffect } from "react";
-import { syncUserToDB } from "@/app/actions/userActions";
+import { useEffect, useState } from "react";
 import { SignedIn } from "@clerk/clerk-react";
 
 export default function ProfilePage() {
-  // const { isSignedIn } = useUser();
-
-  // useEffect(() => {
-  //   if (isSignedIn) {
-  //     syncUserToDB();
-  //   }
-  // }, [isSignedIn]);
+  const [wishlistCount, setWishlistCount] = useState(0);
   const totalSpent = mockOrders.reduce((sum, order) => sum + order.total, 0);
-  const wishlistCount = 5; // Mock wishlist count
+
+  const { user } = useUser();
+  const userId = user?.id;
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchCount = async () => {
+      const res = await fetch(`/api/wishlist-count?userId=${userId}`);
+      const data = await res.json();
+      setWishlistCount(data.count);
+    };
+
+    fetchCount();
+  }, [userId]);
 
   return (
     <div className="min-h-screen bg-background">

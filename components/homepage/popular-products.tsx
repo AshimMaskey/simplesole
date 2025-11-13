@@ -2,41 +2,22 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import toast from "react-hot-toast";
 import Link from "next/link";
+import { Eye } from "lucide-react";
 
-export default function PopularProducts() {
-  const products = [
-    {
-      name: "Velocity Pro",
-      category: "Running",
-      price: "$189",
-      image: "/modern-running-shoe-product-shot-white-background.jpg",
-      badge: "Best Seller",
-    },
-    {
-      name: "Urban Classic",
-      category: "Lifestyle",
-      price: "$149",
-      image: "/casual-sneaker-product-shot-white-background.jpg",
-      badge: null,
-    },
-    {
-      name: "Court Elite",
-      category: "Basketball",
-      price: "$199",
-      image: "/basketball-shoe-product-shot-white-background.jpg",
-      badge: "New",
-    },
-    {
-      name: "Trail Master",
-      category: "Outdoor",
-      price: "$169",
-      image: "/hiking-trail-shoe-product-shot-white-background.jpg",
-      badge: null,
-    },
-  ];
+interface Product {
+  id: string;
+  name: string;
+  category: string;
+  base_price: number;
+  images: string[];
+}
 
+interface PopularProductsProps {
+  products: Product[];
+}
+
+export default function PopularProducts({ products }: PopularProductsProps) {
   return (
     <section className="py-24 px-4 bg-background">
       <div className="max-w-7xl mx-auto">
@@ -65,13 +46,8 @@ export default function PopularProducts() {
             >
               <CardContent className="p-0">
                 <div className="relative aspect-square bg-muted/50 overflow-hidden">
-                  {product.badge && (
-                    <div className="absolute top-3 left-3 z-10 bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full">
-                      {product.badge}
-                    </div>
-                  )}
                   <Image
-                    src={product.image || "/placeholder.svg"}
+                    src={product.images[0] || "/placeholder.svg"}
                     alt={product.name}
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -83,17 +59,18 @@ export default function PopularProducts() {
                   </p>
                   <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
                   <div className="flex items-center justify-between">
-                    <span className="text-xl font-bold">{product.price}</span>
-                    <Button
-                      size="sm"
-                      // variant="ghost"
-                      className=" bg-black text-white cursor-pointer"
-                      onClick={() =>
-                        toast.success("Item added to cart successfully!")
-                      }
-                    >
-                      Add to Cart
-                    </Button>
+                    <span className="text-xl font-bold">
+                      {product.base_price}
+                    </span>
+                    <Link href={`/products/${product.id}`}>
+                      <Button
+                        size="sm"
+                        className=" bg-black text-white cursor-pointer"
+                      >
+                        <Eye />
+                        View Details
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </CardContent>

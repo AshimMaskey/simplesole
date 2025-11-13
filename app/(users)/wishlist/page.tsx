@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Heart, Loader2 } from "lucide-react";
+import { ArrowLeft, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { WishlistCard } from "@/components/card/wishlist-card";
 import toast from "react-hot-toast";
@@ -14,6 +14,7 @@ import {
 import { useUser } from "@clerk/nextjs";
 import { WishlistByUserItem } from "@/types/wishlist";
 import { useWishlist } from "@/contexts/WishlistContext";
+import Spinner from "@/components/spinner/Spinner";
 
 export default function WishlistPage() {
   const [wishlistItems, setWishlistItems] = useState<WishlistByUserItem[] | []>(
@@ -55,7 +56,7 @@ export default function WishlistPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center gap-3">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Spinner />
         <p className="text-muted-foreground">Loading wishlist...</p>
       </div>
     );
