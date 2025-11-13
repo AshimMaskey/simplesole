@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { CircleCheckIcon, CircleHelpIcon, CircleIcon } from "lucide-react";
+import MensHighlight from "./MensHighlist";
 
 import {
   NavigationMenu,
@@ -57,50 +57,31 @@ export function NavigationMenuDemo() {
     <NavigationMenu viewport={false}>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Mens</NavigationMenuTrigger>
+          <NavigationMenuTrigger>
+            <Link href={"/mens"}>Mens</Link>
+          </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-              <li className="row-span-3">
-                <NavigationMenuLink asChild>
-                  <Link
-                    className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-6 no-underline outline-hidden select-none focus:shadow-md"
-                    href="/"
-                  >
-                    <div className="mt-4 mb-2 text-lg font-medium">
-                      shadcn/ui
-                    </div>
-                    <p className="text-muted-foreground text-sm leading-tight">
-                      Beautifully designed components built with Tailwind CSS.
-                    </p>
-                  </Link>
-                </NavigationMenuLink>
-              </li>
-              <ListItem href="/docs" title="Introduction">
-                Re-usable components built using Radix UI and Tailwind CSS.
-              </ListItem>
-              <ListItem href="/docs/installation" title="Installation">
-                How to install dependencies and structure your app.
-              </ListItem>
-              <ListItem href="/docs/primitives/typography" title="Typography">
-                Styles for headings, paragraphs, lists...etc
-              </ListItem>
-            </ul>
+            <div className="w-[500px] p-4">
+              <div>
+                <h3 className="text-sm font-semibold mb-2">Featured Product</h3>
+                <MensHighlight audience="MENS" />
+              </div>
+            </div>
           </NavigationMenuContent>
         </NavigationMenuItem>
+
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Womens</NavigationMenuTrigger>
+          <NavigationMenuTrigger>
+            {" "}
+            <Link href={"/womens"}>Womens</Link>
+          </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-2 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              {components.map((component) => (
-                <ListItem
-                  key={component.title}
-                  title={component.title}
-                  href={component.href}
-                >
-                  {component.description}
-                </ListItem>
-              ))}
-            </ul>
+            <div className="w-[500px] p-4">
+              <div>
+                <h3 className="text-sm font-semibold mb-2">Featured Product</h3>
+                <MensHighlight audience="WOMENS" />
+              </div>
+            </div>
           </NavigationMenuContent>
         </NavigationMenuItem>
         {/* <NavigationMenuItem>
@@ -109,36 +90,17 @@ export function NavigationMenuDemo() {
           </NavigationMenuLink>
         </NavigationMenuItem> */}
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Kids</NavigationMenuTrigger>
+          <NavigationMenuTrigger>
+            {" "}
+            <Link href={"/kids"}>Kids</Link>
+          </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid w-[300px] gap-4">
-              <li>
-                <NavigationMenuLink asChild>
-                  <Link href="#">
-                    <div className="font-medium">Components</div>
-                    <div className="text-muted-foreground">
-                      Browse all components in the library.
-                    </div>
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link href="#">
-                    <div className="font-medium">Documentation</div>
-                    <div className="text-muted-foreground">
-                      Learn how to use the library.
-                    </div>
-                  </Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink asChild>
-                  <Link href="#">
-                    <div className="font-medium">Blog</div>
-                    <div className="text-muted-foreground">
-                      Read our latest blog posts.
-                    </div>
-                  </Link>
-                </NavigationMenuLink>
-              </li>
-            </ul>
+            <div className="w-[500px] p-4">
+              <div>
+                <h3 className="text-sm font-semibold mb-2">Featured Product</h3>
+                <MensHighlight audience="KIDS" />
+              </div>
+            </div>
           </NavigationMenuContent>
         </NavigationMenuItem>
         {/* <NavigationMenuItem>

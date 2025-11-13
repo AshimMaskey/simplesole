@@ -17,3 +17,16 @@ export async function getProductById(productId: string) {
     return null;
   }
 }
+
+//for mens
+export async function getRandomMensProduct() {
+  const products = await prisma.product.findMany({
+    where: { category: { contains: "men", mode: "insensitive" } },
+    take: 10,
+  });
+
+  if (products.length === 0) return null;
+
+  const random = products[Math.floor(Math.random() * products.length)];
+  return random;
+}

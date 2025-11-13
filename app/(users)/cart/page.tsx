@@ -37,6 +37,7 @@ export default function CartPage() {
   const [loadingDeleteId, setLoadingDeleteId] = useState<string | null>(null);
 
   const fetchCart = async () => {
+    if (!userId) return;
     setIsLoading(true);
     try {
       const items = await getCartByUser(userId || "");
@@ -49,8 +50,9 @@ export default function CartPage() {
   };
 
   useEffect(() => {
+    if (!user) return;
     fetchCart();
-  }, []);
+  }, [user]);
 
   // Quantity increase
   const handleIncrease = async (cartId: string, quantity: number) => {
