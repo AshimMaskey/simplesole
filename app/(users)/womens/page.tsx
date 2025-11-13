@@ -1,5 +1,6 @@
-import { getMensProducts } from "@/app/actions/audienceActions";
+import { getProductsByAudience } from "@/app/actions/audienceActions";
 import MensProductsPage from "../mens/mensClient";
+import { Audience } from "@prisma/client";
 
 const WomensPage = async () => {
   const bannerInfo = {
@@ -7,7 +8,7 @@ const WomensPage = async () => {
     desc: "Elegant and trendy Footwear for every occasion",
     imageUrl: "/womens.jpeg",
   };
-  const products = await getMensProducts("WOMENS");
+  const products = await getProductsByAudience(Audience.WOMENS);
   return <MensProductsPage bannerInfo={bannerInfo} products={products} />;
 };
 

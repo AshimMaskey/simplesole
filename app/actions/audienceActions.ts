@@ -1,11 +1,10 @@
 import prisma from "@/lib/prisma";
+import { Audience } from "@prisma/client";
 
-export async function getMensProducts(
-  audience: "MENS" | "WOMENS" | "KIDS" | "UNISEX"
-) {
+export async function getProductsByAudience(audience: Audience) {
   const products = await prisma.product.findMany({
     where: {
-      audience,
+      audience: audience,
     },
     select: {
       id: true,
@@ -14,7 +13,6 @@ export async function getMensProducts(
       images: true,
       base_price: true,
     },
-
     orderBy: {
       created_at: "desc",
     },
