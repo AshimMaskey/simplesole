@@ -8,6 +8,7 @@ import Footer from "@/components/footer/Footer";
 import { Toaster } from "react-hot-toast";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import { checkUser } from "@/lib/check-user";
+import { CartProvider } from "@/contexts/CartContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -51,9 +52,11 @@ export default async function RootLayout({
           <div className="flex flex-col min-h-screen">
             {" "}
             <WishlistProvider>
-              <Navbar />
-              <main className="flex-1 pt-16">{children}</main>
-              <Footer />
+              <CartProvider>
+                <Navbar />
+                <main className="flex-1 pt-16">{children}</main>
+                <Footer />
+              </CartProvider>
             </WishlistProvider>
           </div>
         </body>

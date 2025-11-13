@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useCart } from "@/contexts/CartContext";
 import Link from "next/link";
 import { ArrowLeft, Loader2, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ import { useUser } from "@clerk/nextjs";
 export default function CartPage() {
   const { user } = useUser();
   const userId = user?.id;
+  const { refreshCount } = useCart();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -56,6 +58,7 @@ export default function CartPage() {
     try {
       await updateCartQuantity(cartId, quantity);
       await fetchCart();
+      await refreshCount();
       toast.success("Quantity increased!");
     } catch {
       toast.error("Failed to update quantity.");
@@ -71,6 +74,7 @@ export default function CartPage() {
     try {
       await clearCart(userId);
       await fetchCart(); // refresh cart
+      await refreshCount();
       toast.success("All items removed from cart!");
     } catch {
       toast.error("Failed to remove all items.");
@@ -85,6 +89,7 @@ export default function CartPage() {
     try {
       await updateCartQuantity(cartId, quantity);
       await fetchCart();
+      await refreshCount();
       toast.success("Quantity decreased!");
     } catch {
       toast.error("Failed to update quantity.");
@@ -99,6 +104,7 @@ export default function CartPage() {
     try {
       await removeFromCart(cartId);
       await fetchCart();
+      await refreshCount();
       toast.success("Item removed!");
     } catch {
       toast.error("Failed to remove item.");

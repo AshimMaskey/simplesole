@@ -12,6 +12,7 @@ import { Heart, Menu, Search, ShoppingCart, UserRound, X } from "lucide-react";
 
 import { NavigationMenuDemo } from "./NavMenu";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { useCart } from "@/contexts/CartContext";
 
 const Navbar = () => {
   const { isSignedIn } = useUser();
@@ -27,6 +28,7 @@ const Navbar = () => {
   //   };
   //   fetchCount();
   // }, [user]);
+  const { count: cartCount } = useCart();
   const { count: wishlistCount } = useWishlist();
 
   const handleProfileClick = () => {
@@ -71,7 +73,7 @@ const Navbar = () => {
               <Button variant="ghost" size="icon">
                 <ShoppingCart />
                 <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-semibold rounded-full px-[6px] py-[1px]">
-                  {wishlistCount}
+                  {cartCount}
                 </span>
               </Button>
             </Link>

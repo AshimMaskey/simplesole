@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useCart } from "@/contexts/CartContext";
+
 import Image from "next/image";
 import {
   Dialog,
@@ -17,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Product, ProductVariant } from "@/types/product";
+import type { Product } from "@/types/product";
 import { ShoppingCart, Package } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -37,6 +39,7 @@ export function ProductModal({
 }: ProductModalProps) {
   const { user } = useUser();
   const userId = user?.id;
+  const { refreshCount } = useCart();
   const [loading, setLoading] = useState(false);
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [selectedColor, setSelectedColor] = useState<string>("");
@@ -66,6 +69,7 @@ export function ProductModal({
     setLoading(true);
     try {
       await addToCart(userId, selectedVariant.id, 1);
+      await refreshCount();
       toast.success(
         `${product.name} (Size: ${selectedVariant.size}, Color: ${selectedVariant.color}) added to cart!`
       );
