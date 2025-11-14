@@ -5,9 +5,8 @@ import { OrderHistory } from "@/components/profile/order-history";
 import { SavedAddresses } from "@/components/profile/saved-addresses";
 import { mockUser, mockOrders, mockAddresses } from "@/lib/mock-profile-data";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserButton, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import { SignedIn } from "@clerk/clerk-react";
 
 export default function ProfilePage() {
   const [wishlistCount, setWishlistCount] = useState(0);
@@ -31,9 +30,6 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 space-y-8">
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
         <ProfileHeader user={mockUser} />
 
         <ProfileStats

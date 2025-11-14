@@ -6,9 +6,9 @@ export const mockUser: User = {
   name: "Alex Johnson",
   email: "alex.johnson@example.com",
   avatar: "/professional-headshot.png",
-  phone: "+1 (555) 123-4567",
+  phone: "+977 9808522633",
   bio: "Sneaker enthusiast and runner. Always looking for the perfect pair.",
-  memberSince: new Date("2023-01-15"),
+  memberSince: new Date("2025-01-15"),
 };
 
 export const mockOrders: Order[] = [

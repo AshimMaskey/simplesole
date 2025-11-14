@@ -24,18 +24,18 @@ export function ProfileStats({
     },
     {
       label: "Wishlist Items",
-      value: wishlistItems,
+      value: wishlistItems || 0,
       icon: Heart,
       color: "text-red-600",
       bgColor: "bg-red-50",
     },
-    {
-      label: "Total Spent",
-      value: `$${totalSpent.toFixed(2)}`,
-      icon: ShoppingBag,
-      color: "text-green-600",
-      bgColor: "bg-green-50",
-    },
+    // {
+    //   label: "Total Spent",
+    //   value: `$${totalSpent.toFixed(2)}`,
+    //   icon: ShoppingBag,
+    //   color: "text-green-600",
+    //   bgColor: "bg-green-50",
+    // },
     {
       label: "Avg Order Value",
       value: `$${(totalSpent / totalOrders).toFixed(2)}`,
@@ -46,7 +46,7 @@ export function ProfileStats({
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {stats.map((stat) => (
         <Card key={stat.label} className="p-6">
           <div className="flex items-center gap-4">

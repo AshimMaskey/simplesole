@@ -4,9 +4,9 @@ import type { User } from "@/types/users";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Mail, Phone, Calendar, LayoutDashboard } from "lucide-react";
+import { Mail, Phone, Calendar, LayoutDashboard, LogOut } from "lucide-react";
 import { format } from "date-fns";
-import { useUser } from "@clerk/nextjs";
+import { SignOutButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 
 interface ProfileHeaderProps {
@@ -43,16 +43,28 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
                 </p>
               )} */}
             </div>
-            <Link href={"/dashboard"}>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-fit cursor-pointer bg-transparent"
-              >
-                <LayoutDashboard className="h-4 w-4 mr-1" />
-                Admin Dashboard
-              </Button>
-            </Link>
+            <div>
+              <SignOutButton>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-fit cursor-pointer bg-transparent"
+                >
+                  <LogOut className="h-4 w-4 mr-1" />
+                  Log Out
+                </Button>
+              </SignOutButton>
+              <Link className="ml-3" href={"/dashboard"}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-fit cursor-pointer bg-transparent"
+                >
+                  <LayoutDashboard className="h-4 w-4 mr-1" />
+                  Admin Dashboard
+                </Button>
+              </Link>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
