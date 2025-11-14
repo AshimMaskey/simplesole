@@ -17,7 +17,8 @@ import { ProductDialog } from "@/components/dialog/product-dialog";
 import type { Product } from "@/types/product";
 // import { getProducts, deleteProduct }
 import { getProducts, deleteProduct } from "./actions/productActions";
-import { Spinner } from "@/components/ui/spinner";
+import Spinner from "@/components/spinner/Spinner";
+
 // import { useToast } from "@/hooks/use-toast";
 
 export default function ProductManagementPage() {
@@ -130,7 +131,7 @@ export default function ProductManagementPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Spinner className="size-10" />
+        <Spinner />
       </div>
     );
   }

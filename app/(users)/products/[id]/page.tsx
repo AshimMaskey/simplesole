@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import WishlistButton from "@/components/wishlist/WishlistButton";
 import AddToCart from "./AddToCart";
+import ProductNotFound from "@/components/products/product-notfound";
 
 export default async function ProductDetailsPage({
   params,
@@ -20,11 +21,7 @@ export default async function ProductDetailsPage({
   const reviews = await getReviewsByProduct(id);
 
   if (!product) {
-    return (
-      <div className="p-10 text-center text-red-500 text-xl">
-        Product not found.
-      </div>
-    );
+    return <ProductNotFound />;
   }
 
   return (

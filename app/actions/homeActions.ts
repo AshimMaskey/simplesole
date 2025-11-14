@@ -13,7 +13,7 @@ export async function getFeaturedProducts() {
         images: true,
       },
       orderBy: {
-        created_at: "asc",
+        views: "desc",
       },
       take: 4,
     });

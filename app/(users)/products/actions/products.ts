@@ -4,6 +4,13 @@ import { prisma } from "@/lib/prisma";
 
 export async function getProductById(productId: string) {
   try {
+    prisma.product
+      .update({
+        where: { id: productId },
+        data: { views: { increment: 1 } },
+      })
+      .catch(() => {});
+
     const product = await prisma.product.findUnique({
       where: { id: productId },
       include: {
