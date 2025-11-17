@@ -11,6 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { PaymentMethod } from "@prisma/client";
 import toast from "react-hot-toast";
+import { useCart } from "@/contexts/CartContext";
 
 interface CheckoutFormProps {
   userId: string;
@@ -18,6 +19,7 @@ interface CheckoutFormProps {
 
 export default function CheckoutForm({ userId }: CheckoutFormProps) {
   const router = useRouter();
+  const { refreshCount } = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("COD");
@@ -37,6 +39,7 @@ export default function CheckoutForm({ userId }: CheckoutFormProps) {
         paymentMethod,
         notes: formData.get("notes") as string,
       });
+      refreshCount();
       router.push(`/order-success/${order.id}`);
       toast.success("Order placed Successfully!");
     } catch (err) {
