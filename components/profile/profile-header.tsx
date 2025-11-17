@@ -1,6 +1,6 @@
 "use client";
 
-import type { User } from "@/types/users";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -9,56 +9,92 @@ import { format } from "date-fns";
 import { SignOutButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 
-interface ProfileHeaderProps {
-  user: User;
+interface DBUser {
+  id: string;
+  fullName: string | null;
+  email: string | null;
+  image_url: string | null;
+  phone: string | null;
+  dob: string | null;
+  createdAt: string;
 }
 
-export function ProfileHeader({ user }: ProfileHeaderProps) {
+export function ProfileHeader() {
   const { user: clerkUser } = useUser();
-  const initials = user.name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
+  const [dbUser, setDbUser] = useState<DBUser | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch(`/api/user/${clerkUser?.id}`);
+        const data = await res.json();
+        setDbUser(data);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
+  }, [clerkUser]);
+
+  if (loading) {
+    return (
+      <Card className="p-6 md:p-8 animate-pulse">
+        <div className="flex flex-col md:flex-row gap-6 items-start">
+          <div className="h-32 w-32 bg-muted rounded-full" />
+
+          <div className="flex-1 space-y-4">
+            <div className="h-6 w-48 bg-muted rounded" />
+            <div className="h-5 w-36 bg-muted rounded" />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm pt-4">
+              <div className="h-4 w-40 bg-muted rounded" />
+              <div className="h-4 w-32 bg-muted rounded" />
+              <div className="h-4 w-36 bg-muted rounded" />
+            </div>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  if (!dbUser) {
+    return <Card className="p-6">Failed to load user</Card>;
+  }
 
   return (
     <Card className="p-6 md:p-8">
       <div className="flex flex-col md:flex-row gap-6 items-start">
         <Avatar className="h-24 w-24 md:h-32 md:w-32">
-          <AvatarImage src={`${clerkUser?.imageUrl}`} alt={user.name} />
-          <AvatarFallback className="text-2xl md:text-3xl">
-            {initials}
-          </AvatarFallback>
+          <AvatarImage
+            src={clerkUser?.imageUrl || dbUser.image_url || ""}
+            alt={dbUser.fullName || "User"}
+          />
+          <AvatarFallback className="text-2xl md:text-3xl">U</AvatarFallback>
         </Avatar>
 
         <div className="flex-1 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-balance">
-                {clerkUser?.fullName}
+              <h1 className="text-3xl font-bold">
+                {clerkUser?.fullName || dbUser.fullName}
               </h1>
-              {/* {user.bio && (
-                <p className="text-muted-foreground mt-2 text-pretty">
-                  {user.bio}
-                </p>
-              )} */}
             </div>
+
             <div>
               <SignOutButton>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-fit cursor-pointer bg-transparent"
-                >
+                <Button variant="outline" size="sm" className="cursor-pointer">
                   <LogOut className="h-4 w-4 mr-1" />
                   Log Out
                 </Button>
               </SignOutButton>
-              <Link className="ml-3" href={"/dashboard"}>
+
+              <Link href="/dashboard">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-fit cursor-pointer bg-transparent"
+                  className="cursor-pointer ml-3"
                 >
                   <LayoutDashboard className="h-4 w-4 mr-1" />
                   Admin Dashboard
@@ -70,17 +106,24 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Mail className="h-4 w-4" />
-              <span>ashimmaskey4@gmail.com</span>
+              <span>{dbUser.email}</span>
             </div>
-            {user.phone && (
+
+            {dbUser.phone && (
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Phone className="h-4 w-4" />
-                <span>{user.phone}</span>
+                <span>{dbUser.phone}</span>
               </div>
             )}
+
             <div className="flex items-center gap-2 text-muted-foreground">
               <Calendar className="h-4 w-4" />
-              <span>Member since {format(user.memberSince, "MMM yyyy")}</span>
+              <span>
+                Member since{" "}
+                {dbUser?.createdAt
+                  ? format(new Date(dbUser.createdAt), "MMM yyyy")
+                  : "N/A"}
+              </span>
             </div>
           </div>
         </div>

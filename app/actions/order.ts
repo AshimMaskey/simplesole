@@ -296,31 +296,6 @@ export async function getOrderDetails(orderId: string, userId: string) {
   }
 }
 
-export async function getBasicOrder(orderId: string, userId: string) {
-  try {
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
-      select: {
-        id: true,
-        total: true,
-        paymentMethod: true,
-        status: true,
-        userId: true,
-      },
-    });
-
-    if (!order) throw new Error("Order not found.");
-
-    if (order.userId !== userId) throw new Error("Unauthorized");
-
-    return order;
-  } catch (err) {
-    throw new Error(
-      err instanceof Error ? err.message : "Failed to fetch order."
-    );
-  }
-}
-
 export async function getAllOrders(userRole: string) {
   try {
     if (userRole !== "ADMIN") {
