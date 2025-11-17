@@ -7,7 +7,7 @@ export async function GET(
 ) {
   try {
     const { params } = context;
-    const userId = params.userId;
+    const userId = await params.userId;
     // console.log(userId);
 
     if (!userId) {

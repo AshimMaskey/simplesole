@@ -6,7 +6,7 @@ export async function GET(
   context: { params: { userId: string } }
 ) {
   const { params } = context;
-  const userId = params.userId;
+  const userId = await params.userId;
 
   const orders = await getUserOrders(userId);
   return NextResponse.json(orders);
