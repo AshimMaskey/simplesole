@@ -8,6 +8,7 @@ import { Package, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Order } from "@prisma/client";
 import Link from "next/link";
+import { Pagination } from "../ui/pagination";
 
 interface OrderHistoryProps {
   userId: string;
@@ -24,6 +25,9 @@ const statusColors = {
 export function OrderHistory({ userId }: OrderHistoryProps) {
   const [orders, setOrders] = useState<Order[] | []>([]);
   const [loading, setLoading] = useState(true);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     if (!userId) return;
@@ -80,9 +84,13 @@ export function OrderHistory({ userId }: OrderHistoryProps) {
     );
   }
 
+  const totalPages = Math.ceil(orders.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedOrders = orders.slice(startIndex, startIndex + itemsPerPage);
+
   return (
     <div className="space-y-4">
-      {orders.map((order) => (
+      {paginatedOrders.map((order) => (
         <Card key={order.id} className="p-6 hover:shadow-md transition-shadow">
           <div className="flex flex-col lg:flex-row lg:items-center gap-6">
             <div className="flex-1 space-y-4">
@@ -121,6 +129,12 @@ export function OrderHistory({ userId }: OrderHistoryProps) {
           </div>
         </Card>
       ))}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        className="pt-4 justify-center"
+      />
     </div>
   );
 }

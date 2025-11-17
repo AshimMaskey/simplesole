@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Pagination } from "@/components/ui/pagination"; // import your pagination
 import type { Product, ProductVariant, Filters } from "@/types/product";
 import { Search, SlidersHorizontal } from "lucide-react";
 import toast from "react-hot-toast";
@@ -27,7 +28,8 @@ export default function ShopClient({
 }) {
   const { user } = useUser();
   const userId = user?.id;
-  console.log(userId);
+
+  // Filters
   const [filters, setFilters] = useState<Filters>({
     categories: [],
     priceRange: [0, 200],
@@ -38,12 +40,20 @@ export default function ShopClient({
     sortBy: "newest",
   });
 
+  // Products and modal
   const [products] = useState<Product[]>(initialProducts);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
+  // Filtered products
   const filteredProducts = useMemo(() => {
     let filtered = [...products];
+
+    // Search
     if (filters.search) {
       filtered = filtered.filter(
         (p) =>
@@ -51,29 +61,41 @@ export default function ShopClient({
           p.category.toLowerCase().includes(filters.search.toLowerCase())
       );
     }
+
+    // Category
     if (filters.categories.length > 0) {
       filtered = filtered.filter((p) =>
         filters.categories.includes(p.category)
       );
     }
+
+    // Price range
     filtered = filtered.filter(
       (p) =>
         p.base_price >= filters.priceRange[0] &&
         p.base_price <= filters.priceRange[1]
     );
+
+    // Status
     if (filters.status.length > 0) {
       filtered = filtered.filter((p) => filters.status.includes(p.status));
     }
+
+    // Sizes
     if (filters.sizes.length > 0) {
       filtered = filtered.filter((p) =>
         p.variants?.some((v) => filters.sizes.includes(v.size))
       );
     }
+
+    // Colors
     if (filters.colors.length > 0) {
       filtered = filtered.filter((p) =>
         p.variants?.some((v) => filters.colors.includes(v.color))
       );
     }
+
+    // Sorting
     switch (filters.sortBy) {
       case "price-low":
         filtered.sort((a, b) => a.base_price - b.base_price);
@@ -88,14 +110,24 @@ export default function ShopClient({
         );
         break;
     }
+
     return filtered;
   }, [filters, products]);
 
+  // Slice products for current page
+  const paginatedProducts = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return filteredProducts.slice(start, end);
+  }, [filteredProducts, currentPage]);
+
+  // View details
   const handleViewDetails = (product: Product) => {
     setSelectedProduct(product);
     setModalOpen(true);
   };
 
+  // Add to cart
   const handleAddToCart = async (
     product: Product,
     variant?: ProductVariant
@@ -116,7 +148,7 @@ export default function ShopClient({
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        {/* Header and filters */}
+        {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2 text-balance">Shop</h1>
           <p className="text-muted-foreground text-pretty">
@@ -125,6 +157,7 @@ export default function ShopClient({
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
+          {/* Filters */}
           <aside className="hidden lg:block w-64 flex-shrink-0">
             <div className="sticky top-8">
               <ProductFilters filters={filters} onFiltersChange={setFilters} />
@@ -187,19 +220,34 @@ export default function ShopClient({
               </div>
             </div>
 
+            {/* Showing count */}
             <div className="text-sm text-muted-foreground">
-              Showing {filteredProducts.length} of {products.length} products
+              Showing {paginatedProducts.length} of {filteredProducts.length}{" "}
+              products
             </div>
 
+            {/* Products */}
             <ProductGrid
-              products={filteredProducts}
+              products={paginatedProducts}
               onViewDetails={handleViewDetails}
               onAddToCart={handleAddToCart}
+            />
+
+            {/* Pagination */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.max(
+                1,
+                Math.ceil(filteredProducts.length / itemsPerPage)
+              )}
+              onPageChange={setCurrentPage}
+              className="justify-center mt-6"
             />
           </div>
         </div>
       </div>
 
+      {/* Modal */}
       <ProductModal
         product={selectedProduct}
         open={modalOpen}

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import ProductCard from "@/components/men/product-card";
 import Image from "next/image";
+import { Pagination } from "@/components/ui/pagination";
 
 export interface MensProductProps {
   id: string;
@@ -37,6 +38,8 @@ export default function MensProductsPage({
 }: MensProductsPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("newest");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
   const filteredAndSortedProducts = useMemo(() => {
     const filtered = products.filter(
@@ -52,7 +55,13 @@ export default function MensProductsPage({
     });
 
     return sorted;
-  }, [searchQuery, sortBy]);
+  }, [products, searchQuery, sortBy]);
+
+  const paginatedProducts = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return filteredAndSortedProducts.slice(start, end);
+  }, [filteredAndSortedProducts, currentPage]);
 
   return (
     <main className="min-h-screen bg-background">
@@ -121,12 +130,24 @@ export default function MensProductsPage({
 
       {/* Products Grid */}
       <div className="container mx-auto px-4 py-12">
-        {filteredAndSortedProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredAndSortedProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+        {paginatedProducts.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {paginatedProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(
+                filteredAndSortedProducts.length / itemsPerPage
+              )}
+              onPageChange={setCurrentPage}
+              className="justify-center mt-8"
+            />
+          </>
         ) : (
           <div className="flex flex-col items-center justify-center py-16">
             <Search className="h-12 w-12 text-muted-foreground mb-4" />

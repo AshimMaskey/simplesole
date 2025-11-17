@@ -8,6 +8,7 @@ import { Mail, Phone, Calendar, LayoutDashboard, LogOut } from "lucide-react";
 import { format } from "date-fns";
 import { SignOutButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
+import { Role } from "@prisma/client";
 
 interface DBUser {
   id: string;
@@ -17,11 +18,13 @@ interface DBUser {
   phone: string | null;
   dob: string | null;
   createdAt: string;
+  role: Role;
 }
 
 export function ProfileHeader() {
   const { user: clerkUser } = useUser();
   const [dbUser, setDbUser] = useState<DBUser | null>(null);
+  console.log(dbUser);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -90,16 +93,18 @@ export function ProfileHeader() {
                 </Button>
               </SignOutButton>
 
-              <Link href="/dashboard">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="cursor-pointer ml-3"
-                >
-                  <LayoutDashboard className="h-4 w-4 mr-1" />
-                  Admin Dashboard
-                </Button>
-              </Link>
+              {dbUser && dbUser.role === "ADMIN" && (
+                <Link href="/dashboard">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="cursor-pointer ml-3"
+                  >
+                    <LayoutDashboard className="h-4 w-4 mr-1" />
+                    Admin Dashboard
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
 

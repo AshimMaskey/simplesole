@@ -19,6 +19,9 @@ import type { Product, ProductVariant } from "@/types/product";
 import { Search, X, Package, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { searchProducts } from "./actions/search";
+import { Pagination } from "@/components/ui/pagination";
+
+const RESULTS_PER_PAGE = 8;
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
@@ -28,11 +31,11 @@ export default function SearchPage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // ⏳ Debounce timer
+  // ⏳ Debounce search
   useEffect(() => {
     const query = searchQuery.trim();
-
     if (query.length < 3) {
       setSearchResults([]);
       return;
@@ -42,8 +45,9 @@ export default function SearchPage() {
       startTransition(async () => {
         const results = await searchProducts(query, sortBy);
         setSearchResults(results);
+        setCurrentPage(1); // reset page when new search happens
       });
-    }, 400); // wait 400ms after user stops typing
+    }, 400);
 
     return () => clearTimeout(timeoutId);
   }, [searchQuery, sortBy]);
@@ -62,10 +66,17 @@ export default function SearchPage() {
     toast.success(`${product.name}${variantInfo} has been added to your cart.`);
   };
 
+  // --- Pagination logic ---
+  const totalPages = Math.ceil(searchResults.length / RESULTS_PER_PAGE);
+  const paginatedResults = searchResults.slice(
+    (currentPage - 1) * RESULTS_PER_PAGE,
+    currentPage * RESULTS_PER_PAGE
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
+        {/* Header & Search Bar */}
         <div className="mb-8 space-y-6">
           <div>
             <h1 className="text-4xl font-bold mb-2 text-balance">Search</h1>
@@ -74,7 +85,6 @@ export default function SearchPage() {
             </p>
           </div>
 
-          {/* Search Bar */}
           <div className="flex gap-2">
             <div className="relative flex-1 max-w-2xl">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -98,7 +108,7 @@ export default function SearchPage() {
             </div>
           </div>
 
-          {/* Search Info */}
+          {/* Search Info & Sorting */}
           {searchQuery && (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-2 flex-wrap">
@@ -186,16 +196,29 @@ export default function SearchPage() {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {searchResults.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onViewDetails={handleViewDetails}
-                onAddToCart={handleAddToCart}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {paginatedResults.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onViewDetails={handleViewDetails}
+                  onAddToCart={handleAddToCart}
+                />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center mt-8">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
 

@@ -1,15 +1,15 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
-import { Edit2, Star, Trash2 } from "lucide-react";
+import { Star, Trash2 } from "lucide-react";
 import { deleteReview, ReviewByProduct } from "../actions/reviews";
-import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
 import { ReviewDialog } from "@/components/dialog/review-dialog";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
+import { Pagination } from "@/components/ui/pagination";
 
 interface TabsSectionProps {
   description: string | null;
@@ -34,10 +34,13 @@ const StarRating = ({ rating }: { rating: number }) => {
   );
 };
 
+const REVIEWS_PER_PAGE = 5;
+
 const TabsSection = ({ description, reviews, productId }: TabsSectionProps) => {
   const { user: clerkUser } = useUser();
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const handleDelete = async (id: string) => {
     const confirm = window.confirm(
@@ -57,8 +60,18 @@ const TabsSection = ({ description, reviews, productId }: TabsSectionProps) => {
       setIsDeleting(null);
     }
   };
+
+  // Pagination logic
+  const totalPages = Math.ceil(reviews.length / REVIEWS_PER_PAGE);
+  const paginatedReviews = reviews.slice(
+    (currentPage - 1) * REVIEWS_PER_PAGE,
+    currentPage * REVIEWS_PER_PAGE
+  );
+
   const averageRating =
-    reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
+    reviews.length > 0
+      ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length
+      : 0;
 
   return (
     <div className="mt-12 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-15">
@@ -156,13 +169,12 @@ const TabsSection = ({ description, reviews, productId }: TabsSectionProps) => {
             )}
 
             <div className="space-y-6">
-              {reviews.map((review) => (
+              {paginatedReviews.map((review) => (
                 <div
                   key={review.id}
                   className="border border-gray-200 p-6 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow duration-200 relative"
                 >
                   <div className="flex items-start justify-between mb-3">
-                    {/* User Info */}
                     <div>
                       <div className="font-semibold text-gray-900">
                         {review.user.fullName || "Anonymous"}
@@ -175,7 +187,6 @@ const TabsSection = ({ description, reviews, productId }: TabsSectionProps) => {
                       </div>
                     </div>
 
-                    {/* Edit/Delete Buttons */}
                     {review.user.id.trim() ==
                       (clerkUser?.id || "placeholder") && (
                       <div className="flex gap-1">
@@ -200,13 +211,23 @@ const TabsSection = ({ description, reviews, productId }: TabsSectionProps) => {
                     )}
                   </div>
 
-                  {/* Comment */}
                   <p className="text-gray-700 leading-relaxed text-base sm:text-lg">
                     {review.comment}
                   </p>
                 </div>
               ))}
             </div>
+
+            {/* Pagination */}
+            {reviews.length > REVIEWS_PER_PAGE && (
+              <div className="flex justify-center mt-6">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={(page) => setCurrentPage(page)}
+                />
+              </div>
+            )}
 
             {reviews.length === 0 && (
               <div className="text-center py-12">
