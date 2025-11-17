@@ -3,10 +3,9 @@ import { getUserOrders } from "@/app/actions/order";
 
 export async function GET(
   req: Request,
-  context: { params: { userId: string } }
+  { params }: { params: { userId: string } }
 ) {
-  const { params } = context;
-  const userId = await params.userId;
+  const userId = params.userId;
 
   const orders = await getUserOrders(userId);
   return NextResponse.json(orders);
