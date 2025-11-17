@@ -57,3 +57,20 @@ export async function updateUser(
 
   return updatedUser;
 }
+
+export async function checkIsAdmin(userId: string) {
+  if (!userId) {
+    throw new Error("User ID is required");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  return user.role === "ADMIN";
+}

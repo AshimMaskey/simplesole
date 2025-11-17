@@ -20,6 +20,19 @@ enum Audience {
   UNISEX
 }
 
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELED
+}
+
+enum PaymentMethod {
+  COD
+  ESEWA
+}
+
 model User {
   id String @id
   fullName       String?
@@ -32,7 +45,8 @@ model User {
   updatedAt  DateTime @updatedAt 
   reviews Review[] 
   wishlists    Wishlist[]
-  carts Cart[]                 
+  carts Cart[]      
+  orders Order[]           
 }
 
 model Product {
@@ -63,6 +77,7 @@ model ProductVariant {
   product   Product @relation(fields: [productId], references: [id])
   productId String
   carts Cart[]
+  orderItems OrderItem[]
 }
 
 model Review {
@@ -104,3 +119,38 @@ model Cart {
   @@unique([userId, variantId])
 }
 
+model Order {
+  id                String @id @default(cuid())
+  user              User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String
+  orderItems        OrderItem[]
+  subtotal          Float
+  tax               Float
+  shipping          Float
+  total             Float
+  status            OrderStatus @default(PENDING)
+  paymentMethod     PaymentMethod
+  shippingAddress   String
+  billingAddress    String?
+  phone             String
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id              String @id @default(cuid())
+  order           Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId         String
+  variant         ProductVariant @relation(fields: [variantId], references: [id])
+  variantId       String
+  quantity        Int
+  price           Float
+  createdAt       DateTime @default(now())
+
+  @@index([orderId])
+}

@@ -120,8 +120,10 @@ export default function CartPage() {
     (sum, item) => sum + item.variant.product.base_price * item.quantity,
     0
   );
-  const tax = subtotal * 0.1;
-  const shipping = subtotal > 100 ? 0 : 9.99;
+  // const tax = subtotal * 0.1;
+  const tax = 0;
+  // const shipping = subtotal > 100 ? 0 : 9.99;
+  const shipping: number = 0;
   const total = subtotal + tax + shipping;
 
   return (
@@ -155,9 +157,37 @@ export default function CartPage() {
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4 min-h-[200px]">
             {isLoading ? (
-              <div className="flex flex-col items-center justify-center py-20 gap-4">
-                <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                <p className="text-muted-foreground">Loading cart items...</p>
+              <div className="space-y-4">
+                {[1, 2].map((_, idx) => (
+                  <div
+                    key={idx}
+                    className="p-4 flex gap-4 animate-pulse border rounded-xl"
+                  >
+                    {/* Image placeholder */}
+                    <div className="w-24 h-24 bg-gray-300 rounded-lg flex-shrink-0" />
+
+                    {/* Details placeholder */}
+                    <div className="flex-1 flex flex-col justify-between">
+                      <div className="space-y-2">
+                        <div className="h-5 bg-gray-300 rounded w-3/4" />
+                        <div className="h-4 bg-gray-200 rounded w-1/2" />
+                        <div className="flex gap-3 mt-2">
+                          <div className="h-4 bg-gray-200 rounded w-16" />
+                          <div className="h-4 bg-gray-200 rounded w-16" />
+                        </div>
+                      </div>
+
+                      {/* Price + quantity */}
+                      <div className="flex justify-between items-center mt-4">
+                        <div className="h-6 bg-gray-300 rounded w-20" />
+                        <div className="flex gap-2">
+                          <div className="h-8 w-8 bg-gray-200 rounded" />
+                          <div className="h-8 w-8 bg-gray-200 rounded" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : cartItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 gap-4">
@@ -210,7 +240,7 @@ export default function CartPage() {
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Tax (10%)</span>
+                  <span className="text-muted-foreground">Tax (0%)</span>
                   <span className="font-medium">${tax.toFixed(2)}</span>
                 </div>
               </div>
@@ -222,15 +252,17 @@ export default function CartPage() {
                 <span className="text-lg font-bold">${total.toFixed(2)}</span>
               </div>
 
-              {subtotal < 100 && (
+              {/* {subtotal < 100 && (
                 <p className="text-sm text-muted-foreground mb-4 text-center">
                   Add ${(100 - subtotal).toFixed(2)} more for free shipping!
                 </p>
-              )}
+              )} */}
 
-              <Button className="w-full" size="lg">
-                Proceed to Checkout
-              </Button>
+              <Link href={"/checkout"}>
+                <Button className="w-full" size="lg">
+                  Proceed to Checkout
+                </Button>
+              </Link>
 
               <p className="text-xs text-muted-foreground text-center mt-4">
                 Secure checkout powered by Stripe
