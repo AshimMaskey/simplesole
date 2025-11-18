@@ -1,29 +1,37 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { unstable_cache } from "next/cache";
 
-export async function getProductById(productId: string) {
-  try {
-    prisma.product
-      .update({
+export const getProductById = unstable_cache(
+  async (productId: string) => {
+    try {
+      prisma.product
+        .update({
+          where: { id: productId },
+          data: { views: { increment: 1 } },
+        })
+        .catch(() => {});
+
+      const product = await prisma.product.findUnique({
         where: { id: productId },
-        data: { views: { increment: 1 } },
-      })
-      .catch(() => {});
+        include: {
+          variants: true,
+        },
+      });
 
-    const product = await prisma.product.findUnique({
-      where: { id: productId },
-      include: {
-        variants: true,
-      },
-    });
-
-    return product;
-  } catch (err) {
-    console.error("Error loading product:", err);
-    return null;
+      return product;
+    } catch (err) {
+      console.error("Error loading product:", err);
+      return null;
+    }
+  },
+  ["products"],
+  {
+    revalidate: 3600,
+    tags: ["products"],
   }
-}
+);
 
 //for mens
 export async function getRandomMensProduct() {
