@@ -3,8 +3,6 @@ import { Toaster } from "react-hot-toast";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import { AdminSidebar } from "@/components/dashboard/Sidebar";
-import { useState } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,32 +13,54 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+function AdminLayoutContent({ children }: { children: React.ReactNode }) {
+  const { isOpen, setIsOpen } = useSidebar();
+
+  return (
+    <div className="flex min-h-screen bg-background">
+      <AdminSidebar />
+      <main className="flex-1 transition-all duration-300">
+        <div className="md:hidden p-4 border-b border-border">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle sidebar"
+          >
+            <Menu className="w-6 h-6" />
+          </Button>
+        </div>
+        <div className="p-6 md:p-8">{children}</div>
+      </main>
+    </div>
+  );
+}
 
 export default function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   return (
     <ClerkProvider signInUrl="/signin" signUpUrl="/signup" afterSignOutUrl="/">
       <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <div className="flex">
-            <AdminSidebar open={sidebarOpen} setOpen={setSidebarOpen} />
-            <main
-              className={`flex-1 min-h-screen p-10 transition-all duration-300 ${
-                sidebarOpen ? "ml-74 bg-gray-200" : "ml-16 bg-gray-200"
-              }`}
-            >
-              {children}
-            </main>
-          </div>
+          <SidebarProvider>
+            <AdminLayoutContent>{children}</AdminLayoutContent>
+          </SidebarProvider>
         </body>
       </html>
       <Toaster />
     </ClerkProvider>
   );
 }
+
+import {
+  SidebarProvider,
+  useSidebar,
+} from "@/components/sidebar/sidebar-context";
+import { AdminSidebar } from "@/components/sidebar/admin-sidebar";
+import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
