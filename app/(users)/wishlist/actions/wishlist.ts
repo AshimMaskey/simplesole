@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { revalidateTag, unstable_cache } from "next/cache";
 export async function addToWishlist(userId: string, productId: string) {
   try {
     const wishlistItem = await prisma.wishlist.upsert({
@@ -10,6 +11,7 @@ export async function addToWishlist(userId: string, productId: string) {
       update: {},
       create: { userId, productId },
     });
+    revalidateTag("wishlist");
 
     return { success: true, data: wishlistItem };
   } catch (error) {
@@ -25,6 +27,7 @@ export async function removeFromWishlist(userId: string, productId: string) {
         userId_productId: { userId, productId },
       },
     });
+    revalidateTag("wishlist");
 
     return { success: true };
   } catch (error) {
@@ -33,33 +36,40 @@ export async function removeFromWishlist(userId: string, productId: string) {
   }
 }
 
-export async function getWishlistByUser(userId: string) {
-  try {
-    const wishlist = await prisma.wishlist.findMany({
-      where: { userId },
-      select: {
-        id: true,
-        product: {
-          select: {
-            id: true,
-            name: true,
-            description: true,
-            category: true,
-            base_price: true,
-            total_stock: true,
-            images: true,
+export const getWishlistByUser = unstable_cache(
+  async (userId: string) => {
+    try {
+      const wishlist = await prisma.wishlist.findMany({
+        where: { userId },
+        select: {
+          id: true,
+          product: {
+            select: {
+              id: true,
+              name: true,
+              description: true,
+              category: true,
+              base_price: true,
+              total_stock: true,
+              images: true,
+            },
           },
         },
-      },
-      orderBy: { addedAt: "desc" },
-    });
+        orderBy: { addedAt: "desc" },
+      });
 
-    return { success: true, data: wishlist };
-  } catch (error) {
-    console.error("Error fetching wishlist:", error);
-    return { success: false, error: "Failed to fetch wishlist" };
+      return { success: true, data: wishlist };
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
+      return { success: false, error: "Failed to fetch wishlist" };
+    }
+  },
+  ["wishlist"],
+  {
+    revalidate: 3600,
+    tags: ["wishlist"],
   }
-}
+);
 
 export async function getWishlistCount(userId: string) {
   try {

@@ -1,23 +1,3 @@
-// export interface ProductVariant {
-//   id: string;
-//   size: string;
-//   color: string;
-//   stock: number;
-//   sku: string;
-// }
-
-// export interface Product {
-//   id: string;
-//   name: string;
-//   description: string;
-//   category: string;
-//   base_price: number;
-//   total_stock: number;
-//   status: "active" | "inactive";
-//   images: string[];
-//   created_at: string;
-//   variants?: ProductVariant[];
-// }
 export type Product = {
   id: string;
   name: string;
