@@ -226,6 +226,7 @@ export function ReviewsTable({ reviews, onReviewDeleted }: ReviewsTableProps) {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>SN</TableHead>
                 <TableHead
                   className="cursor-pointer select-none"
                   onClick={() => handleSort("userName")}
@@ -279,6 +280,7 @@ export function ReviewsTable({ reviews, onReviewDeleted }: ReviewsTableProps) {
               ) : (
                 paginatedReviews.map((review) => (
                   <TableRow key={review.id}>
+                    <TableCell className="font-medium">1</TableCell>
                     <TableCell className="font-medium">
                       {review.user.fullName || "Unknown"}
                     </TableCell>

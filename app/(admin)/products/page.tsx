@@ -16,7 +16,6 @@ import { ProductTable } from "@/components/table/product-table";
 import { ProductDialog } from "@/components/dialog/product-dialog";
 import type { Product } from "@/types/product";
 import { getProducts, deleteProduct } from "./actions/productActions";
-import Spinner from "@/components/spinner/Spinner";
 
 export default function ProductManagementPage() {
   const [products, setProducts] = useState<Product[]>([]);
