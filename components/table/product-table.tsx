@@ -108,31 +108,9 @@ export function ProductTable({
 
   return (
     <>
-      <Card className="overflow-hidden">
-        <div className="flex items-center justify-between px-10">
-          <div className="text-sm text-muted-foreground">
-            Filter by Category
-          </div>
-          <Select value={filter} onValueChange={setFilter}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter by category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Products</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
-              <SelectItem value="Running">Running</SelectItem>
-              <SelectItem value="Casual">Casual</SelectItem>
-              <SelectItem value="Trail">Trail</SelectItem>
-              <SelectItem value="Basketball">Basketball</SelectItem>
-              <SelectItem value="Training">Training</SelectItem>
-              <SelectItem value="Hiking">Hiking</SelectItem>
-              <SelectItem value="Soccer">Soccer</SelectItem>
-              <SelectItem value="Tennis">Tennis</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="overflow-x-auto">
+      <Card className="overflow-hidden w-full">
+        {/* Desktop Table View */}
+        <div className="hidden lg:block overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -320,73 +298,249 @@ export function ProductTable({
           </Table>
         </div>
 
+        {/* Mobile/Tablet Card View */}
+        <div className="lg:hidden divide-y">
+          {filteredProducts.map((product) => {
+            const isExpanded = expandedRows.has(product.id);
+            const hasVariants = product.variants && product.variants.length > 0;
+
+            return (
+              <div key={product.id} className="p-4 space-y-4">
+                {/* Product Header */}
+                <div className="flex gap-4">
+                  <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border bg-muted">
+                    <Image
+                      src={product.images[0] || "/placeholder.svg"}
+                      alt={product.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+
+                  <div className="flex-1 min-w-0 space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-medium text-base line-clamp-2">
+                        {product.name}
+                      </h3>
+                      <div className="flex gap-1 flex-shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => onEdit(product)}
+                        >
+                          <Edit className="h-4 w-4" />
+                          <span className="sr-only">Edit {product.name}</span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleDeleteClick(product.id)}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                          <span className="sr-only">Delete {product.name}</span>
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge
+                        variant={
+                          product.status === "active" ? "default" : "secondary"
+                        }
+                      >
+                        {product.status}
+                      </Badge>
+                      <span className="text-sm text-muted-foreground">
+                        {product.category}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Product Details */}
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Price:</span>
+                    <p className="font-medium">
+                      ${product.base_price.toFixed(2)}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Stock:</span>
+                    <p
+                      className={`font-medium ${
+                        product.total_stock === 0
+                          ? "text-destructive"
+                          : product.total_stock < 10
+                          ? "text-orange-600"
+                          : ""
+                      }`}
+                    >
+                      {product.total_stock}
+                    </p>
+                  </div>
+                  {hasVariants && (
+                    <div>
+                      <span className="text-muted-foreground">Variants:</span>
+                      <p className="font-medium">{product.variants!.length}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Variants Toggle */}
+                {hasVariants && (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => toggleRowExpansion(product.id)}
+                    >
+                      {isExpanded ? (
+                        <>
+                          <ChevronDown className="h-4 w-4 mr-2" />
+                          Hide Variants
+                        </>
+                      ) : (
+                        <>
+                          <ChevronRight className="h-4 w-4 mr-2" />
+                          Show Variants ({product.variants!.length})
+                        </>
+                      )}
+                    </Button>
+
+                    {isExpanded && (
+                      <div className="space-y-2 pt-2 border-t">
+                        <h4 className="text-sm font-semibold">Variants</h4>
+                        <div className="space-y-3">
+                          {product.variants!.map((variant) => (
+                            <div
+                              key={variant.id}
+                              className="bg-muted/50 rounded-lg p-3 space-y-2"
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs font-mono text-muted-foreground">
+                                  {variant.sku}
+                                </span>
+                                <span
+                                  className={`text-sm font-medium ${
+                                    variant.stock === 0
+                                      ? "text-destructive"
+                                      : variant.stock < 5
+                                      ? "text-orange-600"
+                                      : ""
+                                  }`}
+                                >
+                                  Stock: {variant.stock}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-4 text-sm">
+                                <div>
+                                  <span className="text-muted-foreground">
+                                    Size:
+                                  </span>{" "}
+                                  {variant.size}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-muted-foreground">
+                                    Color:
+                                  </span>
+                                  <div
+                                    className="h-4 w-4 rounded-full border"
+                                    style={{
+                                      backgroundColor:
+                                        variant.color.toLowerCase(),
+                                    }}
+                                  />
+                                  {variant.color}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Pagination */}
         {totalPages > 0 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-t">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">
-                Rows per page:
-              </span>
-              <Select
-                value={pageSize.toString()}
-                onValueChange={(value) => onPageSizeChange(Number(value))}
-              >
-                <SelectTrigger className="w-[70px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="5">5</SelectItem>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="flex flex-col gap-4 p-4 border-t">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground whitespace-nowrap">
+                  Rows per page:
+                </span>
+                <Select
+                  value={pageSize.toString()}
+                  onValueChange={(value) => onPageSizeChange(Number(value))}
+                >
+                  <SelectTrigger className="w-[70px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">5</SelectItem>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">
+              <div className="text-sm text-muted-foreground text-center">
                 Page {currentPage} of {totalPages} ({totalProducts} total)
-              </span>
-            </div>
+              </div>
 
-            <div className="flex items-center gap-1">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => onPageChange(1)}
-                disabled={currentPage === 1}
-              >
-                <ChevronsLeft className="h-4 w-4" />
-                <span className="sr-only">First page</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft className="h-4 w-4" />
-                <span className="sr-only">Previous page</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() =>
-                  onPageChange(Math.min(totalPages, currentPage + 1))
-                }
-                disabled={currentPage === totalPages}
-              >
-                <ChevronRight className="h-4 w-4" />
-                <span className="sr-only">Next page</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => onPageChange(totalPages)}
-                disabled={currentPage === totalPages}
-              >
-                <ChevronsRight className="h-4 w-4" />
-                <span className="sr-only">Last page</span>
-              </Button>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => onPageChange(1)}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronsLeft className="h-4 w-4" />
+                  <span className="sr-only">First page</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  <span className="sr-only">Previous page</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() =>
+                    onPageChange(Math.min(totalPages, currentPage + 1))
+                  }
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                  <span className="sr-only">Next page</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => onPageChange(totalPages)}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronsRight className="h-4 w-4" />
+                  <span className="sr-only">Last page</span>
+                </Button>
+              </div>
             </div>
           </div>
         )}

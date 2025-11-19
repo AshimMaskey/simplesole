@@ -15,11 +15,8 @@ import {
 import { ProductTable } from "@/components/table/product-table";
 import { ProductDialog } from "@/components/dialog/product-dialog";
 import type { Product } from "@/types/product";
-// import { getProducts, deleteProduct }
 import { getProducts, deleteProduct } from "./actions/productActions";
 import Spinner from "@/components/spinner/Spinner";
-
-// import { useToast } from "@/hooks/use-toast";
 
 export default function ProductManagementPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -30,7 +27,6 @@ export default function ProductManagementPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [isLoading, setIsLoading] = useState(true);
-  // const { toast } = useToast();
 
   useEffect(() => {
     loadProducts();
@@ -43,11 +39,6 @@ export default function ProductManagementPage() {
       setProducts(data);
     } catch (error) {
       console.error("[v0] Error loading products:", error);
-      // toast({
-      //   title: "Error",
-      //   description: "Failed to load products. Please try again.",
-      //   variant: "destructive",
-      // });
       toast.error("Failed to load products. Please try again.");
     } finally {
       setIsLoading(false);
@@ -106,18 +97,10 @@ export default function ProductManagementPage() {
     try {
       await deleteProduct(productId);
       await loadProducts();
-      // toast({
-      //   title: "Success",
-      //   description: "Product deleted successfully.",
-      // });
+
       toast.success("Product deleted successfully.");
     } catch (error) {
       console.error("[v0] Error deleting product:", error);
-      // toast({
-      //   title: "Error",
-      //   description: "Failed to delete product. Please try again.",
-      //   variant: "destructive",
-      // });
       toast.error("Failed to delete product. Please try again.");
     }
   };
@@ -138,9 +121,9 @@ export default function ProductManagementPage() {
 
   return (
     <div>
-      <div className="space-y-6">
+      <div className="p-4">
         {/* Header */}
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl mb-3 font-semibold">Product Management</h1>
             <p className="text-muted-foreground">
@@ -154,19 +137,19 @@ export default function ProductManagementPage() {
         </div>
 
         {/* Search and Filter Bar */}
-        <div className="mb-6 bg-white rounded-2xl p-4 flex flex-col gap-4 sm:flex-row">
+        <div className=" bg-white rounded-2xl mb-4 flex flex-col gap-4 sm:flex-row">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search products by name..."
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="pl-9"
+              className="pl-9 py-5"
             />
           </div>
 
           <Select value={filterBy} onValueChange={handleFilterChange}>
-            <SelectTrigger className="w-full sm:w-[200px]">
+            <SelectTrigger className="w-full py-5 sm:w-[200px]">
               <SelectValue placeholder="Filter by..." />
             </SelectTrigger>
             <SelectContent>
