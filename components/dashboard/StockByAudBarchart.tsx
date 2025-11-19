@@ -23,9 +23,9 @@ const AudienceStockBarChart: React.FC<Props> = ({ data }) => {
         margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="audience" />
-        <YAxis />
-        <Tooltip />
+        <XAxis fontSize={14} dataKey="audience" />
+        <YAxis fontSize={14} />
+        <Tooltip wrapperStyle={{ fontSize: 12 }} />
         <Bar dataKey="stock">
           {data.map((_, index) => (
             <Cell key={index} fill={COLORS[index % COLORS.length]} />

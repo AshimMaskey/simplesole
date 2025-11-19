@@ -28,6 +28,7 @@ const OrderStatusPieChart: React.FC<Props> = ({ data }) => {
     <ResponsiveContainer width="100%" height={300}>
       <PieChart>
         <Pie
+          fontSize={12}
           dataKey="value"
           data={chartData}
           cx="50%"
@@ -44,6 +45,7 @@ const OrderStatusPieChart: React.FC<Props> = ({ data }) => {
             value,
             props.payload.name,
           ]}
+          wrapperStyle={{ fontSize: 12 }}
         />
         <Legend wrapperStyle={{ fontSize: 14 }} />
       </PieChart>

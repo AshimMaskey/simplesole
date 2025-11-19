@@ -13,6 +13,7 @@ import {
 } from "./actions/dashboardActions";
 import OrderStatusPieChart from "@/components/dashboard/OrderStatusPiechart";
 import AudienceStockBarChart from "@/components/dashboard/StockByAudBarchart";
+import Link from "next/link";
 const AdminDashboard = async () => {
   const dashboardCount = await getDashboardCounts();
   const statusCount = await getOrderStatusCounts();
@@ -22,22 +23,26 @@ const AdminDashboard = async () => {
       title: "Total Users",
       value: dashboardCount.totalUsers || 0,
       icon: <IconUsers className="h-6 w-6 text-green-500" />,
+      link: "/users",
     },
     {
       title: "Total Products",
       value: dashboardCount.totalProducts || 0,
       icon: <IconBox className="h-6 w-6 text-yellow-500" />,
+      link: "/products",
     },
 
     {
       title: "Total Orders",
       value: dashboardCount.totalOrders || 0,
       icon: <IconShoppingCart className="h-6 w-6 text-blue-500" />,
+      link: "/admin/orders",
     },
     {
       title: "Reviews",
       value: dashboardCount.totalReviews || 0,
       icon: <IconMessageCircle className="h-6 w-6 text-purple-500" />,
+      link: "/reviews",
     },
   ];
 
@@ -58,22 +63,22 @@ const AdminDashboard = async () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, idx) => (
-          <Card
-            key={idx}
-            className="flex items-center p-4 rounded-lg shadow hover:shadow-lg transition-shadow duration-200"
-          >
-            <div className="p-3 rounded-full bg-gray-100 dark:bg-gray-800">
-              {stat.icon}
-            </div>
-            <div className="ml-4">
-              <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                {stat.title}
-              </CardTitle>
-              <CardContent className="text-2xl font-bold text-gray-900 dark:text-white">
-                {stat.value}
-              </CardContent>
-            </div>
-          </Card>
+          <Link key={idx} href={stat.link}>
+            <Card className="flex items-center p-4 rounded-lg shadow hover:shadow-lg transition-shadow duration-200">
+              {" "}
+              <div className="p-3 rounded-full bg-gray-100 dark:bg-gray-800">
+                {stat.icon}
+              </div>
+              <div className="ml-4">
+                <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  {stat.title}
+                </CardTitle>
+                <CardContent className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {stat.value}
+                </CardContent>
+              </div>
+            </Card>
+          </Link>
         ))}
       </div>
 
