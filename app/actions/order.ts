@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { OrderStatus, PaymentMethod } from "@prisma/client";
 
 export async function calculateCartTotal(userId: string) {
@@ -226,7 +226,7 @@ export async function createOrder(
 
       // 3. Clear cart once
       await tx.cart.deleteMany({ where: { userId } });
-
+      revalidateTag("orders");
       return createdOrder;
     });
 
@@ -262,66 +262,82 @@ export async function getUserOrders(userId: string) {
   }
 }
 
-export async function getOrderDetails(orderId: string, userId: string) {
-  try {
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
-      include: {
-        orderItems: {
-          include: {
-            variant: {
-              include: { product: true },
+export const getOrderDetails = unstable_cache(
+  async (orderId: string, userId: string) => {
+    try {
+      const order = await prisma.order.findUnique({
+        where: { id: orderId },
+        include: {
+          orderItems: {
+            include: {
+              variant: {
+                include: { product: true },
+              },
+            },
+          },
+          user: true,
+        },
+      });
+
+      if (!order) {
+        throw new Error("Order not found.");
+      }
+
+      // Verify ownership
+      if (order.userId !== userId) {
+        throw new Error("Unauthorized access to this order.");
+      }
+
+      return order;
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch order details."
+      );
+    }
+  },
+  ["orderDetails"],
+  {
+    revalidate: 3600,
+    tags: ["orderDetails"],
+  }
+);
+
+export const getAllOrders = unstable_cache(
+  async (userRole: string) => {
+    try {
+      if (userRole !== "ADMIN") {
+        throw new Error("Unauthorized access.");
+      }
+
+      const orders = await prisma.order.findMany({
+        include: {
+          user: true,
+          orderItems: {
+            include: {
+              variant: {
+                include: { product: true },
+              },
             },
           },
         },
-        user: true,
-      },
-    });
+        orderBy: { createdAt: "desc" },
+      });
 
-    if (!order) {
-      throw new Error("Order not found.");
+      return orders;
+    } catch (error) {
+      console.error("Error fetching all orders:", error);
+      throw new Error("Failed to fetch orders.");
     }
-
-    // Verify ownership
-    if (order.userId !== userId) {
-      throw new Error("Unauthorized access to this order.");
-    }
-
-    return order;
-  } catch (error) {
-    console.error("Error fetching order details:", error);
-    throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch order details."
-    );
+  },
+  ["orders"],
+  {
+    revalidate: 3600,
+    tags: ["orders"],
   }
-}
-
-export async function getAllOrders(userRole: string) {
-  try {
-    if (userRole !== "ADMIN") {
-      throw new Error("Unauthorized access.");
-    }
-
-    const orders = await prisma.order.findMany({
-      include: {
-        user: true,
-        orderItems: {
-          include: {
-            variant: {
-              include: { product: true },
-            },
-          },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-
-    return orders;
-  } catch (error) {
-    console.error("Error fetching all orders:", error);
-    throw new Error("Failed to fetch orders.");
-  }
-}
+);
 
 export async function updateOrderStatus(
   orderId: string,
@@ -368,9 +384,8 @@ export async function updateOrderStatus(
       },
     });
 
-    revalidatePath("/admin/orders");
-    revalidatePath(`/admin/orders/${orderId}`);
-
+    revalidateTag("orders");
+    revalidateTag("orderDetails");
     return updated;
   } catch (error) {
     console.error("Error updating order status:", error);
