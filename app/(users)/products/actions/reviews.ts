@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { revalidateTag, unstable_cache } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 
 export interface CreateReviewInput {
   productId: string;
@@ -39,6 +39,7 @@ export async function createReview(input: CreateReviewInput) {
   });
 
   revalidateTag("reviews");
+  revalidateTag("allReviews");
   return review;
 }
 
@@ -92,16 +93,24 @@ export async function updateReview(input: UpdateReviewInput) {
     },
   });
   revalidateTag("reviews");
+  revalidateTag("allReviews");
   return updated;
 }
 
 // DELETE a review
+
 export async function deleteReview(id: string) {
-  const deleted = await prisma.review.delete({
-    where: { id },
-  });
-  revalidateTag("reviews");
-  return deleted;
+  try {
+    const deleted = await prisma.review.delete({
+      where: { id },
+    });
+    revalidatePath("/reviews");
+    revalidateTag("allReviews");
+    return deleted;
+  } catch (error) {
+    console.error("Error deleting review:", error);
+    throw new Error("Failed to delete review");
+  }
 }
 
 // OPTIONAL: Get average rating for a product
