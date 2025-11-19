@@ -1,14 +1,34 @@
 "use server";
-
-// import { prisma } from "@/lib/prisma";
 import prisma from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
+import { revalidateTag, unstable_cache } from "next/cache";
 
-export const getAllUsers = async () => {
-  const user = await currentUser();
-  if (!user) {
-    throw new Error("Unauthorized: Not signed in");
+const _getAllUsers = unstable_cache(
+  async () => {
+    console.log("📡 Fetching from DB...");
+    return prisma.user.findMany({
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        role: true,
+        phone: true,
+        createdAt: true,
+      },
+    });
+  },
+  ["users"],
+  {
+    revalidate: 3600,
+    tags: ["users"],
   }
+);
+
+export async function getAllUsers() {
+  const user = await currentUser();
+  if (!user) throw new Error("Unauthorized");
+
   const nowUser = await prisma.user.findUnique({
     where: { id: user.id },
   });
@@ -17,19 +37,8 @@ export const getAllUsers = async () => {
     throw new Error("Forbidden: Admins only");
   }
 
-  const users = await prisma.user.findMany({
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      fullName: true,
-      email: true,
-      role: true,
-      phone: true,
-      createdAt: true,
-    },
-  });
-  return users;
-};
+  return _getAllUsers();
+}
 
 export async function updateUser(
   targetUserId: string,
@@ -54,6 +63,7 @@ export async function updateUser(
     where: { id: targetUserId },
     data: updates,
   });
+  revalidateTag("users");
 
   return updatedUser;
 }

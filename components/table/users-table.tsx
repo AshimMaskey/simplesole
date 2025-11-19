@@ -89,9 +89,13 @@ export function UsersTable({ users: initialUsers }: UsersTableProps) {
       const refreshedUsers = await getAllUsers();
       setUsers(refreshedUsers);
       toast.success("User updated successfully!");
-      setSelectedUser(null); // close dialog
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update user");
+      setSelectedUser(null);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message);
+      } else {
+        toast.error("Failed to update user");
+      }
     } finally {
       setIsUpdating(false);
     }
@@ -161,57 +165,57 @@ export function UsersTable({ users: initialUsers }: UsersTableProps) {
     return <ArrowUpDown className="h-4 w-4" />;
   };
 
-  const formatDate = (date: Date) =>
-    new Intl.DateTimeFormat("en-US", {
+  function formatDate(date: string | Date | null | undefined) {
+    if (!date) return "N/A";
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return "Invalid Date";
+    return new Intl.DateTimeFormat("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
-    }).format(date);
+    }).format(d);
+  }
 
   return (
-    <div className="space-y-4">
-      {/* Filters */}
-      <Card className="p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by name, email, or phone..."
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="pl-9"
-            />
-          </div>
-          <Select
-            value={roleFilter}
-            onValueChange={(value) => {
-              setRoleFilter(value);
+    <div className="flex flex-col space-y-4 w-full">
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by name, email, or phone..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
-          >
-            <SelectTrigger className="w-full sm:w-[180px]">
-              <SelectValue placeholder="Filter by role" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Roles</SelectItem>
-              <SelectItem value="USER">User</SelectItem>
-              <SelectItem value="ADMIN">Admin</SelectItem>
-            </SelectContent>
-          </Select>
+            className="pl-9 py-5"
+          />
         </div>
-      </Card>
+        <Select
+          value={roleFilter}
+          onValueChange={(value) => {
+            setRoleFilter(value);
+            setCurrentPage(1);
+          }}
+        >
+          <SelectTrigger className="w-full py-5 sm:w-[180px]">
+            <SelectValue placeholder="Filter by role" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Roles</SelectItem>
+            <SelectItem value="USER">User</SelectItem>
+            <SelectItem value="ADMIN">Admin</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-      {/* Table */}
-      <Card>
-        <div className="overflow-x-auto">
+      <Card className="p-0 flex flex-col w-full overflow-hidden">
+        <div className="hidden lg:block overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>SN</TableHead>
-                <TableHead>
+                <TableHead className="whitespace-nowrap">SN</TableHead>
+                <TableHead className="whitespace-nowrap">
                   <Button
                     variant="ghost"
                     onClick={() => handleSort("fullName")}
@@ -220,7 +224,7 @@ export function UsersTable({ users: initialUsers }: UsersTableProps) {
                     Name {getSortIcon("fullName")}
                   </Button>
                 </TableHead>
-                <TableHead>
+                <TableHead className="whitespace-nowrap">
                   <Button
                     variant="ghost"
                     onClick={() => handleSort("email")}
@@ -229,7 +233,7 @@ export function UsersTable({ users: initialUsers }: UsersTableProps) {
                     Email {getSortIcon("email")}
                   </Button>
                 </TableHead>
-                <TableHead>
+                <TableHead className="whitespace-nowrap">
                   <Button
                     variant="ghost"
                     onClick={() => handleSort("role")}
@@ -238,8 +242,8 @@ export function UsersTable({ users: initialUsers }: UsersTableProps) {
                     Role {getSortIcon("role")}
                   </Button>
                 </TableHead>
-                <TableHead className="hidden md:table-cell">Phone</TableHead>
-                <TableHead>
+                <TableHead className="whitespace-nowrap">Phone</TableHead>
+                <TableHead className="whitespace-nowrap">
                   <Button
                     variant="ghost"
                     onClick={() => handleSort("createdAt")}
@@ -248,7 +252,7 @@ export function UsersTable({ users: initialUsers }: UsersTableProps) {
                     Joined {getSortIcon("createdAt")}
                   </Button>
                 </TableHead>
-                <TableHead>Action</TableHead>
+                <TableHead className="whitespace-nowrap">Action</TableHead>
               </TableRow>
             </TableHeader>
 
@@ -265,16 +269,16 @@ export function UsersTable({ users: initialUsers }: UsersTableProps) {
               ) : (
                 paginatedUsers.map((user, index) => (
                   <TableRow key={user.id}>
-                    <TableCell>
+                    <TableCell className="whitespace-nowrap">
                       {(currentPage - 1) * pageSize + index + 1}
                     </TableCell>
-                    <TableCell className="font-medium">
+                    <TableCell className="font-medium whitespace-nowrap">
                       {user.fullName || "N/A"}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {user.email}
+                      <div className="max-w-[200px] truncate">{user.email}</div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="whitespace-nowrap">
                       <Badge
                         variant={
                           user.role === "ADMIN" ? "default" : "secondary"
@@ -283,15 +287,15 @@ export function UsersTable({ users: initialUsers }: UsersTableProps) {
                         {user.role}
                       </Badge>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell text-muted-foreground">
+                    <TableCell className="text-muted-foreground whitespace-nowrap">
                       {user.phone || "N/A"}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="text-muted-foreground whitespace-nowrap">
                       {formatDate(user.createdAt)}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="whitespace-nowrap">
                       <Dialog
-                        open={!!selectedUser}
+                        open={selectedUser?.id === user.id}
                         onOpenChange={(open) => !open && setSelectedUser(null)}
                       >
                         <DialogTrigger asChild>
@@ -349,73 +353,187 @@ export function UsersTable({ users: initialUsers }: UsersTableProps) {
           </Table>
         </div>
 
-        {/* Pagination */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-t">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
-              Rows per page:
-            </span>
-            <Select
-              value={pageSize.toString()}
-              onValueChange={(value) => {
-                setPageSize(Number(value));
-                setCurrentPage(1);
-              }}
-            >
-              <SelectTrigger className="w-[70px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        {/* Mobile Card View */}
+        <div className="lg:hidden divide-y">
+          {paginatedUsers.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              No users found
+            </div>
+          ) : (
+            paginatedUsers.map((user, index) => (
+              <div key={user.id} className="p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs text-muted-foreground">
+                        #{(currentPage - 1) * pageSize + index + 1}
+                      </span>
+                      <Badge
+                        variant={
+                          user.role === "ADMIN" ? "default" : "secondary"
+                        }
+                        className="text-xs"
+                      >
+                        {user.role}
+                      </Badge>
+                    </div>
+                    <p className="font-medium text-base truncate">
+                      {user.fullName || "N/A"}
+                    </p>
+                  </div>
+                  <Dialog
+                    open={selectedUser?.id === user.id}
+                    onOpenChange={(open) => !open && setSelectedUser(null)}
+                  >
+                    <DialogTrigger asChild>
+                      <Button
+                        size="sm"
+                        onClick={() => openDialog(user)}
+                        className="shrink-0"
+                      >
+                        Edit
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Edit User</DialogTitle>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <Input
+                          placeholder="Full Name"
+                          value={editFullName}
+                          onChange={(e) => setEditFullName(e.target.value)}
+                        />
+                        <Input
+                          placeholder="Phone"
+                          value={editPhone}
+                          onChange={(e) => setEditPhone(e.target.value)}
+                        />
+                        <Select
+                          value={editRole}
+                          onValueChange={(val) =>
+                            setEditRole(val as "USER" | "ADMIN")
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="USER">User</SelectItem>
+                            <SelectItem value="ADMIN">Admin</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <DialogFooter>
+                        {isUpdating ? (
+                          <Button disabled>
+                            <Spinner />
+                            Updating...
+                          </Button>
+                        ) : (
+                          <Button onClick={handleUpdate}>Update</Button>
+                        )}
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-start gap-2">
+                    <span className="text-muted-foreground min-w-[60px]">
+                      Email:
+                    </span>
+                    <span className="break-all">{user.email}</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-muted-foreground min-w-[60px]">
+                      Phone:
+                    </span>
+                    <span>{user.phone || "N/A"}</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-muted-foreground min-w-[60px]">
+                      Joined:
+                    </span>
+                    <span>{formatDate(user.createdAt)}</span>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Pagination */}
+        <div className="flex flex-col gap-4 p-4 border-t">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground whitespace-nowrap">
+                Rows per page:
+              </span>
+              <Select
+                value={pageSize.toString()}
+                onValueChange={(value) => {
+                  setPageSize(Number(value));
+                  setCurrentPage(1);
+                }}
+              >
+                <SelectTrigger className="w-[70px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="text-sm text-muted-foreground text-center">
               Page {currentPage} of {totalPages || 1} ({sortedUsers.length}{" "}
               total)
-            </span>
-          </div>
+            </div>
 
-          <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setCurrentPage(1)}
-              disabled={currentPage === 1}
-            >
-              <ChevronsLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-              }
-              disabled={currentPage === totalPages}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setCurrentPage(totalPages)}
-              disabled={currentPage === totalPages}
-            >
-              <ChevronsRight className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                className="h-8 w-8"
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="h-8 w-8"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                }
+                disabled={currentPage === totalPages}
+                className="h-8 w-8"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+                className="h-8 w-8"
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </Card>
