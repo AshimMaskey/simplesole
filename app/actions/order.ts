@@ -3,6 +3,7 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { OrderStatus, PaymentMethod } from "@prisma/client";
+import { sendEmail } from "@/lib/email";
 
 export async function calculateCartTotal(userId: string) {
   try {
@@ -386,6 +387,63 @@ export async function updateOrderStatus(
 
     revalidateTag("orders");
     revalidateTag("orderDetails");
+
+    // --- Send email asynchronously ---
+    if (
+      newStatus === "SHIPPED" ||
+      newStatus === "DELIVERED" ||
+      newStatus === "CANCELED"
+    ) {
+      const userEmail = updated.user.email;
+      const orderDetails = updated.orderItems
+        .map((item) => `${item.variant.product.name} x ${item.quantity}`)
+        .join(", ");
+
+      let subject = "";
+      let body = "";
+
+      if (newStatus === "SHIPPED") {
+        subject = "Your order has been shipped!";
+        body = `
+Hello ${updated.user.fullName},
+
+Your order (ID: ${orderId}) status has been updated to SHIPPED.
+Items: ${orderDetails}
+
+Thank you for shopping with us!
+    `;
+      } else if (newStatus === "DELIVERED") {
+        subject = "Your order has been delivered!";
+        body = `
+Hello ${updated.user.fullName},
+
+Your order (ID: ${orderId}) status has been updated to DELIVERED.
+Items: ${orderDetails}
+
+Thank you for shopping with us!
+    `;
+      } else if (newStatus === "CANCELED") {
+        subject = "Your order has been canceled";
+        body = `
+Hello ${updated.user.fullName},
+
+We’re sorry to inform you that your order (ID: ${orderId}) has been CANCELED.
+Items: ${orderDetails}
+
+If you have any questions, please contact our support team.
+    `;
+      }
+
+      // Fire-and-forget: email sending runs in background
+      if (!userEmail) {
+        console.warn("User email is missing, cannot send email.");
+      } else {
+        sendEmail(userEmail, subject, body).catch((err) =>
+          console.error("Failed to send email:", err)
+        );
+      }
+    }
+
     return updated;
   } catch (error) {
     console.error("Error updating order status:", error);
