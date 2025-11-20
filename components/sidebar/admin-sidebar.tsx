@@ -16,6 +16,7 @@ import { useSidebar } from "./sidebar-context";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@clerk/nextjs";
 import Image from "next/image";
+import { useReviewContext } from "@/contexts/ReviewContext";
 
 const sidebarItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
@@ -29,6 +30,7 @@ const sidebarItems = [
 export function AdminSidebar() {
   const { isOpen, setIsOpen } = useSidebar();
 
+  const { unseenCount } = useReviewContext();
   return (
     <>
       {isOpen && (
@@ -83,6 +85,11 @@ export function AdminSidebar() {
             >
               <item.icon className="w-5 h-5 flex-shrink-0" />
               <span className="text-sm font-medium">{item.label}</span>
+              {item.label === "Reviews" && unseenCount > 0 && (
+                <span className=" bg-red-600 text-white text-xs px-2 py-0.5 rounded-full">
+                  {unseenCount}
+                </span>
+              )}
             </Link>
           ))}
         </nav>

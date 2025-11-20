@@ -47,9 +47,11 @@ export default function DashboardLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <SidebarProvider>
-            <AdminLayoutContent>{children}</AdminLayoutContent>
-          </SidebarProvider>
+          <ReviewProvider>
+            <SidebarProvider>
+              <AdminLayoutContent>{children}</AdminLayoutContent>
+            </SidebarProvider>
+          </ReviewProvider>
         </body>
       </html>
       <Toaster />
@@ -64,3 +66,4 @@ import {
 import { AdminSidebar } from "@/components/sidebar/admin-sidebar";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
+import { ReviewProvider } from "@/contexts/ReviewContext";

@@ -88,6 +88,7 @@ model Review {
   userId    String
   product   Product  @relation(fields: [productId], references: [id])
   productId String
+  seen      Boolean  @default(false) 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
