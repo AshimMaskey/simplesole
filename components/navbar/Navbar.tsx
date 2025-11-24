@@ -13,6 +13,13 @@ import { Heart, Menu, Search, ShoppingCart, UserRound, X } from "lucide-react";
 import { NavigationMenuDemo } from "./NavMenu";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
+import { getCompanySettings } from "@/app/(admin)/settings/general/actions/settingActions";
+
+interface CompanySetting {
+  id: string;
+  logo_url: string | null;
+  company_name: string;
+}
 
 const Navbar = () => {
   const { isSignedIn } = useUser();
@@ -31,18 +38,53 @@ const Navbar = () => {
   const { count: cartCount } = useCart();
   const { count: wishlistCount } = useWishlist();
 
+  const [companySettings, setCompanySettings] = useState<CompanySetting | null>(
+    null
+  );
+  const [isLoadingSettings, setIsLoadingSettings] = useState(true);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const result = await getCompanySettings();
+        if (result.success && result.data) {
+          setCompanySettings(result.data);
+        }
+      } catch (error) {
+        console.error("[v0] Failed to load company settings:", error);
+      } finally {
+        setIsLoadingSettings(false);
+      }
+    };
+    loadSettings();
+  }, []);
+
   const handleProfileClick = () => {
     router.push(isSignedIn ? "/profile" : "/login");
   };
 
+  const logoUrl = companySettings?.logo_url || "/logo.png";
+  const companyName = companySettings?.company_name || "SoleMate";
   return (
     <>
       {/* NAVBAR */}
       <div className="px-4 md:px-12 fixed top-0 left-0 w-full bg-white z-50 border-b border-gray-300">
         <div className="flex items-center justify-between h-16">
           {/* LOGO */}
-          <Link href="/">
-            <Image src="/logo.png" alt="logo" width={70} height={70} />
+          <Link className="flex items-center gap-2" href="/">
+            {!isLoadingSettings && (
+              <>
+                <Image
+                  src={logoUrl || "/placeholder.svg"}
+                  alt="logo"
+                  width={70}
+                  height={70}
+                />
+                <h1 className="text-xl hidden sm:block font-semibold tracking-wide">
+                  {companyName}
+                </h1>
+              </>
+            )}
           </Link>
 
           {/* DESKTOP MENU */}

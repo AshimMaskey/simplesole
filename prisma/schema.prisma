@@ -188,9 +188,9 @@ model FooterLink {
 
 model FooterSocialLink {
   id    String @id @default(cuid())
-  name  String // facebook, twitter, instagram, youtube
+  name  String 
   href  String
-  icon  String @db.Text // SVG path or icon identifier
+  icon  String @db.Text 
   order Int    @default(0)
 
 }
@@ -202,4 +202,12 @@ model FooterInfo {
   copyrightText String
   updatedAt    DateTime @updatedAt
 
+}
+
+model CompanySetting {
+  id            String   @id @default(cuid())
+  logo_url      String?
+  company_name  String   @default("SoleMate")
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 }

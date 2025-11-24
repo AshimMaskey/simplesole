@@ -28,11 +28,12 @@ export default function ShopClient({
 }) {
   const { user } = useUser();
   const userId = user?.id;
+  const maxPrice = Math.max(...initialProducts.map((p) => p.base_price));
 
-  // Filters
+  //filters
   const [filters, setFilters] = useState<Filters>({
     categories: [],
-    priceRange: [0, 200],
+    priceRange: [0, maxPrice],
     status: [],
     sizes: [],
     colors: [],

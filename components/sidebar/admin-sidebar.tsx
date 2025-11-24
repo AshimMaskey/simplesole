@@ -13,9 +13,9 @@ import {
   LogOut,
   ChevronDown,
   ChevronUp,
-  Sliders,
   Layout,
   Columns,
+  SlidersHorizontal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "./sidebar-context";
@@ -34,6 +34,11 @@ const sidebarItems = [
     label: "Settings",
     icon: Settings,
     subItems: [
+      {
+        href: "/settings/general",
+        label: "General",
+        icon: SlidersHorizontal,
+      },
       {
         href: "/settings/homepage",
         label: "Homepage",
