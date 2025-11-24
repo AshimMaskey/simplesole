@@ -278,9 +278,12 @@ export function ReviewsTable({ reviews, onReviewDeleted }: ReviewsTableProps) {
                   </TableCell>
                 </TableRow>
               ) : (
-                paginatedReviews.map((review) => (
+                paginatedReviews.map((review, index) => (
                   <TableRow key={review.id}>
-                    <TableCell className="font-medium">1</TableCell>
+                    <TableCell className="font-medium">
+                      {" "}
+                      {(currentPage - 1) * pageSize + index + 1}
+                    </TableCell>
                     <TableCell className="font-medium">
                       {review.user.fullName || "Unknown"}
                     </TableCell>
