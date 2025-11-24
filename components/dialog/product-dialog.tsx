@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useEffect, useState } from "react";
-import { Upload, X, Plus, Trash2 } from "lucide-react";
+import { X, Plus, Trash2, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,9 +27,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import type { Product, ProductVariant, Audience } from "@/types/product";
-// import { saveProduct } from "@/actions/save-product";
 import { saveProduct } from "@/app/(admin)/products/actions/productActions";
-// import { useToast } from "@/hooks/use-toast";
 import toast from "react-hot-toast";
 
 interface ProductDialogProps {
@@ -57,7 +55,7 @@ export function ProductDialog({
     variants: [],
   });
 
-  const [imageUrl, setImageUrl] = useState("");
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [newVariant, setNewVariant] = useState<Partial<ProductVariant>>({
     size: "",
     color: "",
@@ -65,7 +63,6 @@ export function ProductDialog({
     sku: "",
   });
   const [isSaving, setIsSaving] = useState(false);
-  // const { toast } = useToast();
 
   useEffect(() => {
     if (product) {
@@ -95,18 +92,58 @@ export function ProductDialog({
     }
   }, [formData.variants]);
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    try {
+      setIsUploadingImage(true);
+      const uploadedUrls: string[] = [];
+
+      for (const file of Array.from(files)) {
+        const formDataObj = new FormData();
+        formDataObj.append("file", file);
+        formDataObj.append(
+          "upload_preset",
+          process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || ""
+        );
+
+        const response = await fetch(
+          `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+          {
+            method: "POST",
+            body: formDataObj,
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Upload failed");
+        }
+
+        const data = await response.json();
+        uploadedUrls.push(data.secure_url);
+      }
+
+      setFormData({
+        ...formData,
+        images: [...(formData.images || []), ...uploadedUrls],
+      });
+
+      toast.success(`${uploadedUrls.length} image(s) uploaded successfully`);
+    } catch (error) {
+      console.error("[v0] Error uploading image:", error);
+      toast.error("Failed to upload image. Please try again.");
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
       setIsSaving(true);
       await saveProduct(formData as Product & { variants?: ProductVariant[] });
-      // toast({
-      //   title: "Success",
-      //   description: product
-      //     ? "Product updated successfully."
-      //     : "Product added successfully.",
-      // });
       if (product) {
         toast.success("Product updated successfully.");
       } else {
@@ -115,24 +152,9 @@ export function ProductDialog({
       onSave();
     } catch (error) {
       console.error("[v0] Error saving product:", error);
-      // toast({
-      //   title: "Error",
-      //   description: "Failed to save product. Please try again.",
-      //   variant: "destructive",
-      // });
       toast.error("Failed to save product. Please try again.");
     } finally {
       setIsSaving(false);
-    }
-  };
-
-  const handleAddImage = () => {
-    if (imageUrl.trim()) {
-      setFormData({
-        ...formData,
-        images: [...(formData.images || []), imageUrl.trim()],
-      });
-      setImageUrl("");
     }
   };
 
@@ -335,24 +357,23 @@ export function ProductDialog({
               <div className="space-y-2">
                 <Label>Product Images</Label>
                 <div className="flex gap-2">
-                  <Input
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder="Enter image URL..."
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handleAddImage();
-                      }
-                    }}
-                  />
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={handleAddImage}
-                  >
-                    <Upload className="h-4 w-4" />
-                  </Button>
+                  <div className="relative flex-1">
+                    <Input
+                      id="image-upload"
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={isUploadingImage}
+                      className="cursor-pointer"
+                    />
+                  </div>
+                  {isUploadingImage && (
+                    <Button type="button" disabled>
+                      <Loader className="mr-2 h-4 w-4 animate-spin" />
+                      Uploading...
+                    </Button>
+                  )}
                 </div>
 
                 {/* Image Preview */}
