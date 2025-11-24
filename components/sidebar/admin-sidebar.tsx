@@ -15,6 +15,7 @@ import {
   ChevronUp,
   Sliders,
   Layout,
+  Columns,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "./sidebar-context";
@@ -42,6 +43,11 @@ const sidebarItems = [
         href: "/settings/homepage",
         label: "Homepage",
         icon: Layout,
+      },
+      {
+        href: "/settings/footer",
+        label: "Footer",
+        icon: Columns,
       },
     ],
   },

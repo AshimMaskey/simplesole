@@ -182,9 +182,9 @@ export default function BrandStoryAdmin() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Brand Story Management</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage the features displayed in your brand story section
+          <h1 className="text-3xl mb-3 font-semibold">User Management</h1>
+          <p className="text-muted-foreground">
+            Manage and view all users in your ecommerce shoe store
           </p>
         </div>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
