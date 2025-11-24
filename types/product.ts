@@ -1,14 +1,16 @@
+export type Audience = "MENS" | "WOMENS" | "KIDS" | "UNISEX";
 export type Product = {
   id: string;
   name: string;
   description: string | null;
   category: string;
+  audience: Audience;
   base_price: number;
   total_stock: number;
-  status: string; // "active" | "inactive"
+  status: string;
   images: string[];
   created_at: Date;
-  variants?: ProductVariant[]; // optional when fetching with `include`
+  variants?: ProductVariant[];
 };
 
 export type ProductVariant = {
@@ -17,8 +19,8 @@ export type ProductVariant = {
   color: string;
   stock: number;
   sku: string;
-  productId?: string; // foreign key
-  product?: Product; // optional, only included if `include: { product: true }`
+  productId?: string;
+  product?: Product;
 };
 
 export type Filters = {

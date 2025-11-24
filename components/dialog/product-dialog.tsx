@@ -26,7 +26,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
-import type { Product, ProductVariant } from "@/types/product";
+import type { Product, ProductVariant, Audience } from "@/types/product";
 // import { saveProduct } from "@/actions/save-product";
 import { saveProduct } from "@/app/(admin)/products/actions/productActions";
 // import { useToast } from "@/hooks/use-toast";
@@ -48,6 +48,7 @@ export function ProductDialog({
   const [formData, setFormData] = useState<Partial<Product>>({
     name: "",
     description: "",
+    audience: "UNISEX",
     category: "Running",
     base_price: 0,
     total_stock: 0,
@@ -74,6 +75,7 @@ export function ProductDialog({
         name: "",
         description: "",
         category: "Running",
+        audience: "UNISEX",
         base_price: 0,
         total_stock: 0,
         status: "active",
@@ -236,6 +238,25 @@ export function ProductDialog({
                       <SelectItem value="Basketball">Basketball</SelectItem>
                       <SelectItem value="Training">Training</SelectItem>
                       <SelectItem value="Lifestyle">Lifestyle</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="audience">Audience</Label>
+                  <Select
+                    value={formData.audience}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, audience: value as Audience })
+                    }
+                  >
+                    <SelectTrigger id="audience">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="MENS">Men&apos;s</SelectItem>
+                      <SelectItem value="WOMENS">Women&apos;s</SelectItem>
+                      <SelectItem value="KIDS">Kids</SelectItem>
+                      <SelectItem value="UNISEX">Unisex</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
