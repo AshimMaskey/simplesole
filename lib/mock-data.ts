@@ -4,6 +4,7 @@ export const mockProducts: Product[] = [
   {
     id: "1",
     name: "Air Max Velocity",
+    audience: "UNISEX",
     description:
       "Premium running shoes with advanced cushioning technology for maximum comfort and performance.",
     category: "Running",
@@ -23,6 +24,7 @@ export const mockProducts: Product[] = [
   {
     id: "2",
     name: "Urban Stride",
+    audience: "UNISEX",
     description:
       "Casual sneakers perfect for everyday wear with a sleek, minimalist design.",
     category: "Casual",
@@ -40,6 +42,7 @@ export const mockProducts: Product[] = [
   {
     id: "3",
     name: "Trail Blazer Pro",
+    audience: "UNISEX",
     description:
       "Rugged trail running shoes built for off-road adventures with superior grip and durability.",
     category: "Trail",
@@ -57,6 +60,7 @@ export const mockProducts: Product[] = [
   {
     id: "4",
     name: "Court Master",
+    audience: "UNISEX",
     description:
       "High-performance basketball shoes with ankle support and responsive cushioning.",
     category: "Basketball",
@@ -74,6 +78,7 @@ export const mockProducts: Product[] = [
   {
     id: "5",
     name: "Flex Runner",
+    audience: "UNISEX",
     description:
       "Lightweight running shoes designed for speed and agility with breathable mesh upper.",
     category: "Running",
@@ -91,6 +96,7 @@ export const mockProducts: Product[] = [
   {
     id: "6",
     name: "Classic Leather",
+    audience: "UNISEX",
     description:
       "Timeless leather sneakers with premium craftsmanship and all-day comfort.",
     category: "Casual",
