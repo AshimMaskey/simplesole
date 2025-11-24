@@ -35,11 +35,6 @@ const sidebarItems = [
     icon: Settings,
     subItems: [
       {
-        href: "/settings/general",
-        label: "General",
-        icon: Sliders,
-      },
-      {
         href: "/settings/homepage",
         label: "Homepage",
         icon: Layout,
