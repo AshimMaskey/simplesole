@@ -1,8 +1,19 @@
 "use client";
 import { SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const msg = searchParams.get("toast");
+    if (msg === "unauthorized") {
+      toast.error("You are not authorized to access that page");
+    }
+  }, [searchParams]);
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       <SignedOut>

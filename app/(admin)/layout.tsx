@@ -1,69 +1,46 @@
-"use client";
-import { Toaster } from "react-hot-toast";
+import { redirect } from "next/navigation";
+import { checkIsAdmin } from "./users/actions/userActions";
+import AdminLayoutContent from "@/components/admin/admin-layout-content";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "react-hot-toast";
+import { auth } from "@clerk/nextjs/server";
+import { ReviewProvider } from "@/contexts/ReviewContext";
+import { SidebarProvider } from "@/components/sidebar/sidebar-context";
 import "@/app/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-function AdminLayoutContent({ children }: { children: React.ReactNode }) {
-  const { isOpen, setIsOpen } = useSidebar();
 
-  return (
-    <div className="flex min-h-screen bg-background">
-      <AdminSidebar />
-      <main className="flex-1 transition-all duration-300">
-        <div className="md:hidden p-4 border-b border-border">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle sidebar"
-          >
-            <Menu className="w-6 h-6" />
-          </Button>
-        </div>
-        <div className="p-6 md:p-8">{children}</div>
-      </main>
-    </div>
-  );
-}
-
-export default function DashboardLayout({
+export default async function AdminLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+  const { userId } = await auth();
+  if (!userId) redirect("/login");
+
+  const isAdmin = await checkIsAdmin(userId || "fallback");
+  if (!isAdmin) redirect("/unauthorized");
+
   return (
     <ClerkProvider signInUrl="/signin" signUpUrl="/signup" afterSignOutUrl="/">
       <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <ReviewProvider>
-            <SidebarProvider>
+          <SidebarProvider>
+            <ReviewProvider>
               <AdminLayoutContent>{children}</AdminLayoutContent>
-            </SidebarProvider>
-          </ReviewProvider>
+            </ReviewProvider>
+          </SidebarProvider>
+
+          <Toaster />
         </body>
       </html>
-      <Toaster />
     </ClerkProvider>
   );
 }
-
-import {
-  SidebarProvider,
-  useSidebar,
-} from "@/components/sidebar/sidebar-context";
-import { AdminSidebar } from "@/components/sidebar/admin-sidebar";
-import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
-import { ReviewProvider } from "@/contexts/ReviewContext";
