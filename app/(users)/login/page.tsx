@@ -32,7 +32,7 @@ const LoginPage = () => {
           </div>
 
           <div className="mb-4">
-            <SignInButton forceRedirectUrl="/" mode="modal">
+            <SignInButton mode="modal">
               <button className="w-full bg-indigo-600 cursor-pointer text-white rounded-full font-medium text-base py-3 hover:bg-indigo-700 transition">
                 Sign In
               </button>
@@ -45,7 +45,7 @@ const LoginPage = () => {
             <div className="border-t border-gray-300 w-1/4"></div>
           </div>
 
-          <SignUpButton forceRedirectUrl="/" mode="modal">
+          <SignUpButton mode="modal">
             <button className="w-full bg-white border cursor-pointer border-indigo-500 text-indigo-600 rounded-full font-medium text-base py-3 hover:bg-indigo-50 transition">
               Create an Account
             </button>
