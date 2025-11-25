@@ -27,14 +27,6 @@ const Navbar = () => {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  // useEffect(() => {
-  //   const fetchCount = async () => {
-  //     if (!user) return;
-  //     const res = await getWishlistCount(user.id);
-  //     if (res.success) setWishlistCount(res.count || 0);
-  //   };
-  //   fetchCount();
-  // }, [user]);
   const { count: cartCount } = useCart();
   const { count: wishlistCount } = useWishlist();
 
@@ -72,7 +64,12 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           {/* LOGO */}
           <Link className="flex items-center gap-2" href="/">
-            {!isLoadingSettings && (
+            {isLoadingSettings ? (
+              <div className="flex items-center gap-2 animate-pulse">
+                <div className="w-[60px] h-[60px] bg-gray-300 rounded-full" />
+                <div className="hidden sm:block h-5 w-36 bg-gray-300 rounded" />
+              </div>
+            ) : (
               <>
                 <Image
                   src={logoUrl || "/placeholder.svg"}

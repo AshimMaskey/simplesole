@@ -83,13 +83,13 @@ export function ProductDialog({
   }, [product, open]);
 
   useEffect(() => {
-    if (formData.variants && formData.variants.length > 0) {
-      const totalStock = formData.variants.reduce(
-        (sum, variant) => sum + variant.stock,
-        0
-      );
-      setFormData((prev) => ({ ...prev, total_stock: totalStock }));
-    }
+    const totalStock =
+      formData.variants?.reduce((sum, variant) => sum + variant.stock, 0) || 0;
+
+    setFormData((prev) => ({
+      ...prev,
+      total_stock: totalStock,
+    }));
   }, [formData.variants]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -326,7 +326,7 @@ export function ProductDialog({
                   />
                 </div>
 
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <Label htmlFor="stock">
                     Total Stock
                     {formData.variants && formData.variants.length > 0 && (
@@ -349,6 +349,23 @@ export function ProductDialog({
                     placeholder="0"
                     disabled={formData.variants && formData.variants.length > 0}
                     required
+                  />
+                </div> */}
+                <div className="space-y-2">
+                  <Label htmlFor="stock">
+                    Total Stock
+                    <span className="ml-2 text-xs text-muted-foreground">
+                      (Calculated from variants)
+                    </span>
+                  </Label>
+
+                  <Input
+                    id="stock"
+                    type="number"
+                    value={formData.total_stock}
+                    readOnly
+                    disabled
+                    className="cursor-not-allowed bg-muted"
                   />
                 </div>
               </div>

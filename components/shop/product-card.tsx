@@ -33,7 +33,7 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
             className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-110"
           />
           <div className="absolute top-3 right-3 flex flex-col gap-2">
-            {product.status === "inactive" && (
+            {product.total_stock === 0 && (
               <Badge variant="destructive">Out of Stock</Badge>
             )}
             {product.created_at >
@@ -80,7 +80,7 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
           <Button
             className="w-full"
             size="sm"
-            disabled={product.status === "inactive"}
+            disabled={product.total_stock === 0}
             onClick={(e) => {
               e.stopPropagation();
               onViewDetails(product);

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   X,
   Users,
@@ -23,7 +23,13 @@ import { cn } from "@/lib/utils";
 import { SignOutButton } from "@clerk/nextjs";
 import Image from "next/image";
 import { useReviewContext } from "@/contexts/ReviewContext";
+import { getCompanySettings } from "@/app/(admin)/settings/general/actions/settingActions";
 
+interface CompanySetting {
+  id: string;
+  logo_url: string | null;
+  company_name: string;
+}
 const sidebarItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
   { href: "/users", label: "Users", icon: Users },
@@ -58,6 +64,28 @@ export function AdminSidebar() {
   const { unseenCount } = useReviewContext();
 
   const [openMenus, setOpenMenus] = useState<string[]>([]);
+  const [companySettings, setCompanySettings] = useState<CompanySetting | null>(
+    null
+  );
+  const [isLoadingSettings, setIsLoadingSettings] = useState(true);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const result = await getCompanySettings();
+        if (result.success && result.data) {
+          setCompanySettings(result.data);
+        }
+      } catch (error) {
+        console.error("[v0] Failed to load company settings:", error);
+      } finally {
+        setIsLoadingSettings(false);
+      }
+    };
+    loadSettings();
+  }, []);
+  const logoUrl = companySettings?.logo_url || "/logo.png";
+  const companyName = companySettings?.company_name || "SoleMate";
 
   const toggleMenu = (label: string) => {
     setOpenMenus((prev) =>
@@ -87,10 +115,22 @@ export function AdminSidebar() {
         <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
           <Link href={"/"}>
             <div className="flex justify-center w-full items-center gap-2">
-              <Image alt="logo" src={"/logo.png"} height={50} width={50} />
-              <h1 className="text-2xl font-bold text-sidebar-primary">
-                SoleMate
-              </h1>
+              {isLoadingSettings ? (
+                <div className="flex items-center gap-2 animate-pulse">
+                  {/* Logo skeleton */}
+                  <div className="w-[50px] h-[50px] rounded-full bg-gray-300" />
+
+                  {/* Text skeleton */}
+                  <div className="h-6 w-32 rounded bg-gray-300" />
+                </div>
+              ) : (
+                <>
+                  <Image alt="logo" src={logoUrl} height={50} width={50} />
+                  <h1 className="text-2xl font-bold text-sidebar-primary">
+                    {companyName}
+                  </h1>
+                </>
+              )}
             </div>
           </Link>
           <Button

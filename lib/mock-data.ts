@@ -112,7 +112,13 @@ export const mockProducts: Product[] = [
   },
 ];
 
-export const categories = ["Running", "Casual", "Trail", "Basketball"];
+export const categories = [
+  "Running",
+  "Casual",
+  "Trail",
+  "Basketball",
+  "Formal",
+];
 export const sizes = ["7", "8", "9", "10", "11", "12"];
 export const colors = [
   { name: "White", hex: "#FFFFFF" },
