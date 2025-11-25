@@ -65,7 +65,7 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
 
   const onSubmit = async (values: ReviewFormValues) => {
     if (!user?.id) {
-      toast.error("You must be logged in to add a review.");
+      toast.error("Please log in first!");
       return;
     }
 
@@ -109,35 +109,46 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
         <DialogHeader>
           <DialogTitle>{isEdit ? "Edit Review" : "Add Review"}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Rating */}
-          <div className="flex items-center gap-2">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <Star
-                key={star}
-                className={`w-6 h-6 cursor-pointer ${
-                  star <= rating
-                    ? "fill-yellow-400 text-yellow-400"
-                    : "fill-gray-300 text-gray-300"
-                }`}
-                onClick={() => setValue("rating", star)}
-              />
-            ))}
-          </div>
-          {errors.rating && (
-            <p className="text-red-500 text-sm">{errors.rating.message}</p>
-          )}
 
-          {/* Comment */}
-          <textarea
-            {...register("comment")}
-            placeholder="Write your review..."
-            className="w-full border border-gray-300 rounded-md p-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
-            rows={4}
-          />
-          {errors.comment && (
-            <p className="text-red-500 text-sm">{errors.comment.message}</p>
-          )}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Rating Label */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Rating
+            </label>
+            <div className="flex items-center gap-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  className={`w-6 h-6 cursor-pointer ${
+                    star <= rating
+                      ? "fill-yellow-400 text-yellow-400"
+                      : "fill-gray-300 text-gray-300"
+                  }`}
+                  onClick={() => setValue("rating", star)}
+                />
+              ))}
+            </div>
+            {errors.rating && (
+              <p className="text-red-500 text-sm">{errors.rating.message}</p>
+            )}
+          </div>
+
+          {/* Comment Label */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Comment
+            </label>
+            <textarea
+              {...register("comment")}
+              placeholder="Write your review..."
+              className="w-full border border-gray-300 rounded-md p-2 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
+              rows={4}
+            />
+            {errors.comment && (
+              <p className="text-red-500 text-sm">{errors.comment.message}</p>
+            )}
+          </div>
 
           <DialogFooter>
             <Button type="submit" disabled={isSubmitting}>

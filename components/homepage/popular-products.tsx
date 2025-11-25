@@ -60,7 +60,7 @@ export default function PopularProducts({ products }: PopularProductsProps) {
                   <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
                   <div className="flex items-center justify-between">
                     <span className="text-xl font-bold">
-                      {product.base_price}
+                      $ {product.base_price}
                     </span>
                     <Link href={`/products/${product.id}`}>
                       <Button

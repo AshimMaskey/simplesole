@@ -43,7 +43,7 @@ export default async function ProductDetailsPage({
         <div className="flex flex-col gap-6">
           <h1 className="text-3xl font-bold">{product.name}</h1>
           <p className="text-gray-600">{product.description}</p>
-          <div className="text-2xl font-semibold">Rs. {product.base_price}</div>
+          <div className="text-2xl font-semibold"> ${product.base_price}</div>
 
           <div>
             <h3 className="font-semibold mb-2">Available Variants:-</h3>

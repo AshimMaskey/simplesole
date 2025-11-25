@@ -63,7 +63,7 @@ export function ProductModal({
   );
 
   const handleAddToCartClick = async () => {
-    if (!userId) return toast.error("You must be signned in to add to cart.");
+    if (!userId) return toast.error("Please log in first!");
     if (!selectedVariant) return toast.error("Please select a variant.");
 
     setLoading(true);
