@@ -385,13 +385,33 @@ export async function updateOrderStatus(
       },
     });
     if (newStatus === "DELIVERED") {
+      const productIdsSet = new Set<string>();
+
+      // Decrement each variant stock
       await Promise.all(
-        updated.orderItems.map((item) =>
-          prisma.productVariant.update({
+        updated.orderItems.map((item) => {
+          productIdsSet.add(item.variant.productId);
+          return prisma.productVariant.update({
             where: { id: item.variantId },
             data: { stock: { decrement: item.quantity } },
-          })
-        )
+          });
+        })
+      );
+
+      // Update total_stock for each product
+      await Promise.all(
+        Array.from(productIdsSet).map(async (productId) => {
+          const variants = await prisma.productVariant.findMany({
+            where: { productId },
+            select: { stock: true },
+          });
+          const totalStock = variants.reduce((sum, v) => sum + v.stock, 0);
+
+          await prisma.product.update({
+            where: { id: productId },
+            data: { total_stock: totalStock },
+          });
+        })
       );
     }
 

@@ -32,15 +32,19 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
             fill
             className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-110"
           />
-          <div className="absolute top-3 right-3 flex flex-col gap-2">
+          <div className="absolute top-3 right-3 flex flex-row justify-between gap-2">
             {product.total_stock === 0 && (
               <Badge variant="destructive">Out of Stock</Badge>
             )}
-            {product.created_at >
-              new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) && (
-              <Badge className="bg-primary text-primary-foreground">New</Badge>
-            )}
+            {product.total_stock > 0 &&
+              product.created_at >
+                new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) && (
+                <Badge className="bg-primary text-primary-foreground">
+                  New
+                </Badge>
+              )}
           </div>
+
           <div
             className={`absolute inset-0 bg-black/40 flex items-center justify-center gap-2 transition-opacity duration-300 ${
               isHovered ? "opacity-100" : "opacity-0"
