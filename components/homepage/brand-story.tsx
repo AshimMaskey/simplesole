@@ -4,8 +4,23 @@ import {
   type BrandStoryFeature,
 } from "@/app/actions/brand-story";
 
-export default async function BrandStoryServer() {
+interface CompanySetting {
+  id: string;
+  logo_url: string | null;
+  company_name: string;
+}
+
+export default async function BrandStoryServer({
+  companySettings,
+}: {
+  companySettings?: CompanySetting;
+}) {
   const features: BrandStoryFeature[] = await getBrandStoryFeatures();
 
-  return <BrandStoryClient features={features} />;
+  return (
+    <BrandStoryClient
+      companyName={companySettings?.company_name || "Our Store"}
+      features={features}
+    />
+  );
 }

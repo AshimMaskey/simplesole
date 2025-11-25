@@ -5,16 +5,17 @@ import type { BrandStoryFeature } from "@/app/actions/brand-story";
 
 interface Props {
   features: BrandStoryFeature[];
+  companyName: string;
 }
 
-export default function BrandStoryClient({ features }: Props) {
+export default function BrandStoryClient({ features, companyName }: Props) {
   return (
     <section className="py-24 px-4 bg-muted/30">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-balance">
-            Why Choose SoleMate
+            Why Choose {companyName}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
             We&apos;re not just selling shoes—we&apos;re crafting experiences

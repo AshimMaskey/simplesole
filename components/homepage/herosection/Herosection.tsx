@@ -1,7 +1,17 @@
 import { TypewriterEffectSmooth } from "@/components/ui/typewriter-effect";
 import Link from "next/link";
 
-const Herosection = () => {
+interface CompanySetting {
+  id: string;
+  logo_url: string | null;
+  company_name: string;
+}
+
+const Herosection = ({
+  companySettings,
+}: {
+  companySettings?: CompanySetting;
+}) => {
   const words = [
     { text: "Explore" },
     { text: "premium" },
@@ -41,7 +51,7 @@ const Herosection = () => {
               </svg>
               <span className="relative ">Discover Your Perfect</span>
             </span>{" "}
-            Pair With SoleMate
+            {`Pair With ${companySettings?.company_name ?? "Our Store"}`}
           </h1>
           <div className="mx-auto hidden md:block mb-8 max-w-2xl text-lg">
             <TypewriterEffectSmooth words={words} />
