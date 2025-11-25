@@ -27,7 +27,7 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
       <CardContent className="p-0">
         <div className="relative aspect-square overflow-hidden bg-muted">
           <Image
-            src={product.images[0] || "/fallback.jpeg"}
+            src={product.images[0] || "/product_placeholder.jpeg"}
             alt={product.name}
             fill
             className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-110"

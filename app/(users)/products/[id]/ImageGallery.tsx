@@ -11,10 +11,10 @@ export default function ImageGallery({ images }: { images: string[] }) {
       {/* Main Image */}
       <div className="relative w-full aspect-[4/3] sm:aspect-[3/2] md:aspect-[16/10] lg:aspect-[16/9] rounded-xl overflow-hidden">
         <Image
-          src={mainImage || "/placeholder.png"}
+          src={mainImage || "/product_placeholder.jpeg"}
           fill
           alt="Main product image"
-          className="object-cover transition-transform duration-200 hover:scale-105 cursor-pointer"
+          className="object-cover border-2 transition-transform duration-200 hover:scale-105 cursor-pointer"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"
           priority
         />

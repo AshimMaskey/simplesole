@@ -216,14 +216,14 @@ export async function createOrder(
       });
 
       // 2. Update stock in parallel (MUCH faster)
-      await Promise.all(
-        cartItems.map((item) =>
-          tx.productVariant.update({
-            where: { id: item.variantId },
-            data: { stock: { decrement: item.quantity } },
-          })
-        )
-      );
+      // await Promise.all(
+      //   cartItems.map((item) =>
+      //     tx.productVariant.update({
+      //       where: { id: item.variantId },
+      //       data: { stock: { decrement: item.quantity } },
+      //     })
+      //   )
+      // );
 
       // 3. Clear cart once
       await tx.cart.deleteMany({ where: { userId } });
@@ -384,6 +384,16 @@ export async function updateOrderStatus(
         user: true,
       },
     });
+    if (newStatus === "DELIVERED") {
+      await Promise.all(
+        updated.orderItems.map((item) =>
+          prisma.productVariant.update({
+            where: { id: item.variantId },
+            data: { stock: { decrement: item.quantity } },
+          })
+        )
+      );
+    }
 
     revalidateTag("orders");
     revalidateTag("orderDetails");

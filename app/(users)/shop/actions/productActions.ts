@@ -5,6 +5,9 @@ import { unstable_cache } from "next/cache";
 export const getProducts = unstable_cache(
   async () => {
     const products = await prisma.product.findMany({
+      where: {
+        status: "active",
+      },
       include: { variants: true },
       orderBy: { created_at: "desc" },
     });

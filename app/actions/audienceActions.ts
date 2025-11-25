@@ -7,6 +7,7 @@ export const getProductsByAudience = unstable_cache(
     const products = await prisma.product.findMany({
       where: {
         audience: audience,
+        status: "active",
       },
       select: {
         id: true,

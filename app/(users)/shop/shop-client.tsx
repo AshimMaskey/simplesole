@@ -77,9 +77,16 @@ export default function ShopClient({
         p.base_price <= filters.priceRange[1]
     );
 
-    // Status
+    // Stock Status Filter using product.total_status
     if (filters.status.length > 0) {
-      filtered = filtered.filter((p) => filters.status.includes(p.status));
+      filtered = filtered.filter((p) => {
+        const stock = p.total_stock || 0;
+
+        if (filters.status.includes("inStock") && stock === 0) return false;
+        if (filters.status.includes("outOfStock") && stock > 0) return false;
+
+        return true;
+      });
     }
 
     // Sizes

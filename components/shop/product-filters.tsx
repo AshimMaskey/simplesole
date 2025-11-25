@@ -126,7 +126,7 @@ export function ProductFilters({
 
         <Separator />
 
-        <div>
+        {/* <div>
           <h4 className="mb-3 text-sm font-medium">Status</h4>
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
@@ -150,6 +150,39 @@ export function ProductFilters({
               />
               <Label
                 htmlFor="status-inactive"
+                className="text-sm font-normal cursor-pointer"
+              >
+                Out of Stock
+              </Label>
+            </div>
+          </div>
+        </div> */}
+        <div>
+          <h4 className="mb-3 text-sm font-medium">Stock Status</h4>
+
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="status-instock"
+                checked={filters.status.includes("inStock")}
+                onCheckedChange={() => handleStatusToggle("inStock")}
+              />
+              <Label
+                htmlFor="status-instock"
+                className="text-sm font-normal cursor-pointer"
+              >
+                In Stock
+              </Label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="status-outstock"
+                checked={filters.status.includes("outOfStock")}
+                onCheckedChange={() => handleStatusToggle("outOfStock")}
+              />
+              <Label
+                htmlFor="status-outstock"
                 className="text-sm font-normal cursor-pointer"
               >
                 Out of Stock
