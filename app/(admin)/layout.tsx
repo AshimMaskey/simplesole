@@ -27,7 +27,15 @@ export default async function AdminLayout({
   if (!isAdmin) redirect("/unauthorized");
 
   return (
-    <ClerkProvider signInUrl="/signin" signUpUrl="/signup" afterSignOutUrl="/">
+    <ClerkProvider
+      // signInUrl="/signin"
+      // signUpUrl="/signup"
+      // afterSignOutUrl="/"
+      signInUrl="/login"
+      signUpUrl="/login"
+      afterSignInUrl={"/"}
+      afterSignOutUrl="/"
+    >
       <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
