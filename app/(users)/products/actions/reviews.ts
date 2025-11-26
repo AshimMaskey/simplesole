@@ -105,6 +105,7 @@ export async function deleteReview(id: string) {
       where: { id },
     });
     revalidatePath("/reviews");
+    revalidateTag("reviews");
     revalidateTag("allReviews");
     return deleted;
   } catch (error) {
