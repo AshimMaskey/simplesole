@@ -34,7 +34,7 @@ export default function Highlight({ audience }: HighlightProps) {
   return (
     <div className="border rounded-xl p-3 flex items-center gap-3 hover:bg-muted/40 transition">
       <Image
-        src={product.images[0]}
+        src={product.images[0] || "/product_placeholder.jpeg"}
         alt={product.name}
         width={70}
         height={70}

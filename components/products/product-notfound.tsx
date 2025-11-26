@@ -33,7 +33,7 @@ const ProductNotFound = () => {
       {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <Link
-          href="/products"
+          href="/shop"
           className="flex items-center justify-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold transition"
         >
           <ShoppingCart className="w-5 h-5" />

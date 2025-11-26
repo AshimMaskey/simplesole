@@ -34,7 +34,7 @@ export function CartItemCard({
         {/* Product Image */}
         <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-muted">
           <Image
-            src={variant.product.images[0] || "/placeholder.svg"}
+            src={variant.product.images[0] || "/product_placeholder.jpeg"}
             alt={variant.product.name}
             fill
             className="object-cover"

@@ -28,7 +28,7 @@ export function WishlistCard({ item, onRemove }: WishlistCardProps) {
       {/* Product Image */}
       <div className="relative w-full h-48 overflow-hidden bg-muted rounded-md">
         <Image
-          src={item.product.images[0] || "/placeholder.svg"}
+          src={item.product.images[0] || "/product_placeholder.jpeg"}
           alt={item.product.name}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"

@@ -19,7 +19,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <Image
           width={400}
           height={400}
-          src={product.images[0] || "/placeholder.svg"}
+          src={product.images[0] || "/product_placeholder.jpeg"}
           alt={product.name}
           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
         />
