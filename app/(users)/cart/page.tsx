@@ -198,14 +198,14 @@ export default function CartPage() {
                 <p className="text-muted-foreground text-center max-w-md">
                   Looks like you haven&apos;t added anything to your cart yet.
                 </p>
-                <Link href="/">
+                <Link href="/shop">
                   <Button size="lg" className="mt-4">
                     Start Shopping
                   </Button>
                 </Link>
               </div>
             ) : (
-              cartItems.map((item) => (
+              cartItems.map((item: any) => (
                 <CartItemCard
                   key={item.id}
                   item={item}
@@ -263,10 +263,6 @@ export default function CartPage() {
                   Proceed to Checkout
                 </Button>
               </Link>
-
-              <p className="text-xs text-muted-foreground text-center mt-4">
-                Secure checkout powered by Stripe
-              </p>
             </Card>
           </div>
         </div>

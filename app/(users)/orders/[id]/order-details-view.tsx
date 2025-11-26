@@ -78,14 +78,19 @@ export default function OrderDetailsView({ order }: OrderDetailsViewProps) {
   const currentStepIndex = statusSteps.indexOf(order.status);
 
   return (
-    <div className="space-y-6">
-      {/* Status and Timeline */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Order Status</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
+    <div className="space-y-8 max-w-6xl mx-auto">
+      {/* Header */}
+      <Card className="shadow-sm">
+        <CardContent className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-semibold">Order #{order.id}</h2>
+            <p className="text-sm text-muted-foreground">
+              Placed on{" "}
+              {format(new Date(order.createdAt), "MMMM dd, yyyy 'at' hh:mm a")}
+            </p>
+          </div>
+
+          <div className="flex gap-3 items-center flex-wrap">
             <Badge
               className={
                 statusColors[order.status as keyof typeof statusColors]
@@ -94,156 +99,153 @@ export default function OrderDetailsView({ order }: OrderDetailsViewProps) {
               {order.status}
             </Badge>
 
-            {/* Timeline */}
-            <div className="mt-6">
-              <div className="flex items-center justify-between">
-                {statusSteps.map((step, idx) => (
-                  <div key={step} className="flex flex-col items-center flex-1">
-                    <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${
-                        idx <= currentStepIndex
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {idx < currentStepIndex ? "✓" : idx + 1}
-                    </div>
-                    <p className="text-xs text-center">{step}</p>
-                    {idx < statusSteps.length - 1 && (
-                      <div
-                        className={`flex-1 h-1 my-2 ${
-                          idx < currentStepIndex ? "bg-primary" : "bg-muted"
-                        }`}
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <Separator className="my-4" />
-            <p className="text-sm text-muted-foreground">
-              Ordered on{" "}
-              {format(new Date(order.createdAt), "MMMM dd, yyyy 'at' hh:mm a")}
-            </p>
+            <Badge variant="outline">
+              {order.paymentMethod === "COD"
+                ? "Cash on Delivery"
+                : order.paymentMethod}
+            </Badge>
           </div>
         </CardContent>
       </Card>
 
-      {/* Order Items */}
-      <Card>
+      {/* Timeline */}
+      <Card className="shadow-sm">
         <CardHeader>
-          <CardTitle>Items</CardTitle>
+          <CardTitle>Order Progress</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {order.orderItems.map((item) => (
+          <div className="flex items-center justify-between">
+            {statusSteps.map((step, idx) => (
               <div
-                key={item.id}
-                className="flex gap-4 pb-4 border-b last:border-0"
+                key={step}
+                className="flex-1 flex flex-col items-center text-center"
               >
-                {item.variant.product.images?.[0] && (
-                  <Image
-                    src={item.variant.product.images[0] || "/placeholder.svg"}
-                    alt={item.variant.product.name}
-                    width={80}
-                    height={80}
-                    className="rounded object-cover"
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 text-sm font-semibold
+                ${
+                  idx <= currentStepIndex
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground"
+                }`}
+                >
+                  {idx < currentStepIndex ? "✓" : idx + 1}
+                </div>
+                <span className="text-xs">{step}</span>
+                {/* {idx < statusSteps.length - 1 && (
+                  <div
+                    className={`h-1 w-full mt-2 ${
+                      idx < currentStepIndex ? "bg-primary" : "bg-muted"
+                    }`}
                   />
-                )}
-                <div className="flex-1">
-                  <p className="font-semibold">{item.variant.product.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {item.variant.color} - {item.variant.size}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Qty: {item.quantity}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="font-semibold">Rs. {item.price.toFixed(2)}</p>
-                  <p className="text-sm text-muted-foreground">
-                    Rs. {(item.price * item.quantity).toFixed(2)} total
-                  </p>
-                </div>
+                )} */}
               </div>
             ))}
           </div>
         </CardContent>
       </Card>
 
-      {/* Shipping Info */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
+      {/* Items & Summary */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Items */}
+        <Card className="lg:col-span-2 shadow-sm">
           <CardHeader>
-            <CardTitle>Shipping Address</CardTitle>
+            <CardTitle>Order Items</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-sm whitespace-pre-wrap">
-              {order.shippingAddress}
-            </p>
-            <Separator className="my-4" />
-            <p className="font-semibold text-sm">Phone</p>
-            <p className="text-sm">{order.phone}</p>
+          <CardContent className="space-y-5">
+            {order.orderItems.map((item) => (
+              <div
+                key={item.id}
+                className="flex gap-4 border-b pb-4 last:border-0"
+              >
+                <Image
+                  src={item.variant.product.images?.[0] || "/placeholder.svg"}
+                  alt={item.variant.product.name}
+                  width={90}
+                  height={90}
+                  className="rounded-lg object-cover"
+                />
+
+                <div className="flex-1">
+                  <p className="font-semibold text-base">
+                    {item.variant.product.name}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {item.variant.color} • {item.variant.size}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Quantity: {item.quantity}
+                  </p>
+                </div>
+
+                <div className="text-right">
+                  <p className="font-semibold">Rs. {item.price.toFixed(2)}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Total: Rs. {(item.price * item.quantity).toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            ))}
           </CardContent>
         </Card>
 
-        <Card>
+        {/* Order Summary */}
+        <Card className="shadow-sm">
           <CardHeader>
-            <CardTitle>Billing Address</CardTitle>
+            <CardTitle>Summary</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-sm whitespace-pre-wrap">
-              {order.billingAddress}
-            </p>
+          <CardContent className="space-y-3 text-sm">
+            <div className="flex justify-between">
+              <span>Subtotal</span>
+              <span>Rs. {order.subtotal.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Tax</span>
+              <span>Rs. {order.tax.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Shipping</span>
+              <span>Rs. {order.shipping.toFixed(2)}</span>
+            </div>
+            <Separator />
+            <div className="flex justify-between text-base font-bold">
+              <span>Total</span>
+              <span>Rs. {order.total.toFixed(2)}</span>
+            </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Order Summary */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Order Summary</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Subtotal</span>
-            <span>Rs. {order.subtotal.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Tax</span>
-            <span>Rs. {order.tax.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Shipping</span>
-            <span>Rs. {order.shipping.toFixed(2)}</span>
-          </div>
-          <Separator />
-          <div className="flex justify-between text-lg font-bold">
-            <span>Total</span>
-            <span>Rs. {order.total.toFixed(2)}</span>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Addresses */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="shadow-sm">
+          <CardHeader>
+            <CardTitle>Shipping Information</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm space-y-2">
+            <p className="whitespace-pre-wrap">{order.shippingAddress}</p>
+            <Separator />
+            <p className="font-semibold">Phone</p>
+            <p>{order.phone}</p>
+          </CardContent>
+        </Card>
 
-      {/* Payment Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Payment Method</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm">{order.paymentMethod}</p>
-        </CardContent>
-      </Card>
+        <Card className="shadow-sm">
+          <CardHeader>
+            <CardTitle>Billing Information</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm whitespace-pre-wrap">
+            {order.billingAddress || "Same as shipping address"}
+          </CardContent>
+        </Card>
+      </div>
 
+      {/* Notes */}
       {order.notes && (
-        <Card>
+        <Card className="shadow-sm">
           <CardHeader>
             <CardTitle>Order Notes</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-sm">{order.notes}</p>
-          </CardContent>
+          <CardContent className="text-sm">{order.notes}</CardContent>
         </Card>
       )}
     </div>

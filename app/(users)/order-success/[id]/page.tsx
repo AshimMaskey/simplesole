@@ -148,10 +148,10 @@ export default async function OrderSuccessPage({
 
         {/* Action Buttons */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Link href="/orders" className="w-full">
+          <Link href="/profile" className="w-full">
             <Button className="w-full">View All Orders</Button>
           </Link>
-          <Link href="/" className="w-full">
+          <Link href="/shop" className="w-full">
             <Button variant="outline" className="w-full">
               Continue Shopping
             </Button>
