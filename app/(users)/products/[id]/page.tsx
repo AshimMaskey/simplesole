@@ -49,8 +49,11 @@ export default async function ProductDetailsPage({
             <h3 className="font-semibold mb-2">Available Variants:-</h3>
             <div className="flex gap-3 overflow-x-auto py-2">
               {product.variants.length === 0 ? (
-                <div>
-                  <h1 className="text-red-500">No Variants! :(</h1>
+                <div className="w-full p-6 rounded-2xl text-center bg-gray-100 shadow-sm">
+                  <p className="text-sm font-medium">No variants available</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    This product currently has no selectable options.
+                  </p>
                 </div>
               ) : null}
               {product.variants.map((v) => (

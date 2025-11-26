@@ -10,6 +10,16 @@ import toast from "react-hot-toast";
 import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { Pagination } from "@/components/ui/pagination";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 interface TabsSectionProps {
   description: string | null;
@@ -17,40 +27,38 @@ interface TabsSectionProps {
   productId: string;
 }
 
-const StarRating = ({ rating }: { rating: number }) => {
-  return (
-    <div className="flex gap-1">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <Star
-          key={star}
-          className={`w-4 h-4 ${
-            star <= rating
-              ? "fill-yellow-400 text-yellow-400"
-              : "fill-gray-300 text-gray-300"
-          }`}
-        />
-      ))}
-    </div>
-  );
-};
+const StarRating = ({ rating }: { rating: number }) => (
+  <div className="flex gap-1">
+    {[1, 2, 3, 4, 5].map((star) => (
+      <Star
+        key={star}
+        className={`w-4 h-4 ${
+          star <= rating
+            ? "fill-yellow-400 text-yellow-400"
+            : "fill-gray-300 text-gray-300"
+        }`}
+      />
+    ))}
+  </div>
+);
 
 const REVIEWS_PER_PAGE = 5;
 
 const TabsSection = ({ description, reviews, productId }: TabsSectionProps) => {
   const { user: clerkUser } = useUser();
   const router = useRouter();
+
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const handleDelete = async (id: string) => {
-    const confirm = window.confirm(
-      "Are you sure you want to delete this review?"
-    );
-    if (!confirm) return;
+  // Delete review handler
+  const handleDelete = async () => {
+    if (!deleteReviewId) return;
 
     try {
-      setIsDeleting(id);
-      await deleteReview(id);
+      setIsDeleting(deleteReviewId);
+      await deleteReview(deleteReviewId);
       toast.success("Review deleted successfully!");
       router.refresh();
     } catch (err) {
@@ -58,6 +66,7 @@ const TabsSection = ({ description, reviews, productId }: TabsSectionProps) => {
       toast.error("Failed to delete review.");
     } finally {
       setIsDeleting(null);
+      setDeleteReviewId(null);
     }
   };
 
@@ -129,9 +138,7 @@ const TabsSection = ({ description, reviews, productId }: TabsSectionProps) => {
                   <div className="mt-4 md:mt-4">
                     <ReviewDialog
                       productId={productId}
-                      onSuccess={() => {
-                        router.refresh();
-                      }}
+                      onSuccess={() => router.refresh()}
                       triggerLabel="Add Review"
                     />
                   </div>
@@ -187,7 +194,7 @@ const TabsSection = ({ description, reviews, productId }: TabsSectionProps) => {
                       </div>
                     </div>
 
-                    {review.user.id.trim() ==
+                    {review.user.id.trim() ===
                       (clerkUser?.id || "placeholder") && (
                       <div className="flex gap-1">
                         <ReviewDialog
@@ -197,7 +204,7 @@ const TabsSection = ({ description, reviews, productId }: TabsSectionProps) => {
                           triggerLabel={"Edit Review"}
                         />
                         <button
-                          onClick={() => handleDelete(review.id)}
+                          onClick={() => setDeleteReviewId(review.id)}
                           disabled={isDeleting === review.id}
                           className="text-gray-500 cursor-pointer p-2 hover:bg-red-100 rounded-xl hover:text-red-600 transition-colors"
                         >
@@ -239,9 +246,7 @@ const TabsSection = ({ description, reviews, productId }: TabsSectionProps) => {
                 <div className="w-full flex justify-center mt-3">
                   <ReviewDialog
                     productId={productId}
-                    onSuccess={() => {
-                      router.refresh();
-                    }}
+                    onSuccess={() => router.refresh()}
                     triggerLabel="Add Review"
                   />
                 </div>
@@ -250,6 +255,38 @@ const TabsSection = ({ description, reviews, productId }: TabsSectionProps) => {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* ALERT DIALOG FOR REVIEW DELETE */}
+      <AlertDialog
+        open={deleteReviewId !== null}
+        onOpenChange={(open) => !open && setDeleteReviewId(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Review?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. Your review will be permanently
+              removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 flex items-center justify-center gap-2"
+            >
+              {isDeleting === deleteReviewId ? (
+                <>
+                  <Spinner className="h-4 w-4" />
+                  <span className="text-white">Deleting...</span>
+                </>
+              ) : (
+                <span className="text-white">Delete</span>
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
