@@ -36,6 +36,16 @@ interface ProductDialogProps {
   product: Product | null;
   onSave: () => void;
 }
+interface Category {
+  id: string;
+  name: string;
+}
+
+const fetchCategories = async (): Promise<Category[]> => {
+  const res = await fetch("/api/category");
+  if (!res.ok) throw new Error("Failed to fetch categories");
+  return res.json();
+};
 
 export function ProductDialog({
   open,
@@ -43,6 +53,18 @@ export function ProductDialog({
   product,
   onSave,
 }: ProductDialogProps) {
+  const [categories, setCategories] = useState<Category[]>([]);
+  useEffect(() => {
+    if (open) {
+      fetchCategories()
+        .then(setCategories)
+        .catch((err) => {
+          console.error(err);
+          toast.error("Failed to load categories");
+        });
+    }
+  }, [open]);
+
   const [formData, setFormData] = useState<Partial<Product>>({
     name: "",
     description: "",
@@ -251,15 +273,14 @@ export function ProductDialog({
                     }
                   >
                     <SelectTrigger id="category">
-                      <SelectValue />
+                      <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Running">Running</SelectItem>
-                      <SelectItem value="Casual">Casual</SelectItem>
-                      <SelectItem value="Trail">Trail</SelectItem>
-                      <SelectItem value="Basketball">Basketball</SelectItem>
-                      <SelectItem value="Training">Training</SelectItem>
-                      <SelectItem value="Lifestyle">Lifestyle</SelectItem>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.name}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
