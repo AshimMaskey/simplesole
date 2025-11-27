@@ -156,7 +156,9 @@ export function ProductTable({
                       <TableCell>
                         <div className="relative h-12 w-12 overflow-hidden rounded-md border bg-muted">
                           <Image
-                            src={product.images[0] || "/placeholder.svg"}
+                            src={
+                              product.images[0] || "/product_placeholder.jpeg"
+                            }
                             alt={product.name}
                             fill
                             className="object-cover"
@@ -310,7 +312,7 @@ export function ProductTable({
                 <div className="flex gap-4">
                   <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border bg-muted">
                     <Image
-                      src={product.images[0] || "/placeholder.svg"}
+                      src={product.images[0] || "/product_placeholder.jpeg"}
                       alt={product.name}
                       fill
                       className="object-cover"
