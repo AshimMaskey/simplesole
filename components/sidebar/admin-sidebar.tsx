@@ -16,6 +16,7 @@ import {
   Layout,
   Columns,
   SlidersHorizontal,
+  Tags,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "./sidebar-context";
@@ -34,6 +35,7 @@ const sidebarItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
   { href: "/users", label: "Users", icon: Users },
   { href: "/products", label: "Products", icon: Box },
+  { href: "/categories", label: "Categories", icon: Tags },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/reviews", label: "Reviews", icon: Star },
   {
