@@ -47,7 +47,7 @@ export default function PopularProducts({ products }: PopularProductsProps) {
               <CardContent className="p-0">
                 <div className="relative aspect-square bg-muted/50 overflow-hidden">
                   <Image
-                    src={product.images[0] || "/placeholder.svg"}
+                    src={product.images[0] || "/product_placeholder.jpeg"}
                     alt={product.name}
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
