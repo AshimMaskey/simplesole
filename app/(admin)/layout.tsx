@@ -28,9 +28,6 @@ export default async function AdminLayout({
 
   return (
     <ClerkProvider
-      // signInUrl="/signin"
-      // signUpUrl="/signup"
-      // afterSignOutUrl="/"
       signInUrl="/login"
       signUpUrl="/login"
       afterSignInUrl={"/"}

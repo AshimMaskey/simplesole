@@ -114,7 +114,6 @@ export async function deleteReview(id: string) {
   }
 }
 
-// OPTIONAL: Get average rating for a product
 export async function getAverageRating(productId: string) {
   const result = await prisma.review.aggregate({
     _avg: { rating: true },

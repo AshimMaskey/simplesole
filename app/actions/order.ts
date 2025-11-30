@@ -21,8 +21,6 @@ export async function calculateCartTotal(userId: string) {
       subtotal += item.variant.product.base_price * item.quantity;
     });
 
-    // const tax = subtotal * 0.1;
-    // const shipping = subtotal > 5000 ? 0 : 200;
     const tax: number = 0;
     const shipping: number = 0;
 
@@ -62,93 +60,6 @@ export async function validateStock(userId: string) {
   }
 }
 
-// export async function createOrder(
-//   userId: string,
-//   formData: {
-//     shippingAddress: string;
-//     billingAddress?: string;
-//     phone: string;
-//     paymentMethod: PaymentMethod;
-//     notes?: string;
-//   }
-// ) {
-//   try {
-//     // Validate stock
-//     const stockValidation = await validateStock(userId);
-//     if (!stockValidation.valid) {
-//       throw new Error(stockValidation.message);
-//     }
-
-//     // Get cart items
-//     const cartItems = await prisma.cart.findMany({
-//       where: { userId },
-//       include: {
-//         variant: {
-//           include: { product: true },
-//         },
-//       },
-//     });
-
-//     if (cartItems.length === 0) {
-//       throw new Error("Cart is empty.");
-//     }
-
-//     // Calculate totals
-//     const totals = await calculateCartTotal(userId);
-
-//     // Create order with items in transaction
-//     const order = await prisma.order.create({
-//       data: {
-//         userId,
-//         shippingAddress: formData.shippingAddress,
-//         billingAddress: formData.billingAddress || formData.shippingAddress,
-//         phone: formData.phone,
-//         paymentMethod: formData.paymentMethod,
-//         notes: formData.notes,
-//         subtotal: totals.subtotal,
-//         tax: totals.tax,
-//         shipping: totals.shipping,
-//         total: totals.total,
-//         orderItems: {
-//           create: cartItems.map((item) => ({
-//             variantId: item.variantId,
-//             quantity: item.quantity,
-//             price: item.variant.product.base_price,
-//           })),
-//         },
-//       },
-//       include: {
-//         orderItems: {
-//           include: {
-//             variant: {
-//               include: { product: true },
-//             },
-//           },
-//         },
-//       },
-//     });
-
-//     // Update stock for each variant
-//     for (const item of cartItems) {
-//       await prisma.productVariant.update({
-//         where: { id: item.variantId },
-//         data: { stock: { decrement: item.quantity } },
-//       });
-//     }
-
-//     // Clear cart
-//     await prisma.cart.deleteMany({
-//       where: { userId },
-//     });
-
-//     return order;
-//   } catch (error) {
-//     console.error("Error creating order:", error);
-//     throw new Error(
-//       error instanceof Error ? error.message : "Failed to create order."
-//     );
-//   }
-// }
 export async function createOrder(
   userId: string,
   formData: {
@@ -180,7 +91,6 @@ export async function createOrder(
       throw new Error("Cart is empty.");
     }
 
-    // Calculate totals in-memory (NO extra DB hits)
     const subtotal = cartItems.reduce(
       (sum, item) => sum + item.variant.product.base_price * item.quantity,
       0
@@ -190,9 +100,7 @@ export async function createOrder(
     const shipping = 0;
     const total = subtotal + tax + shipping;
 
-    // Run everything inside a single fast atomic transaction
     const order = await prisma.$transaction(async (tx) => {
-      // 1. Create order
       const createdOrder = await tx.order.create({
         data: {
           userId,
@@ -215,17 +123,6 @@ export async function createOrder(
         },
       });
 
-      // 2. Update stock in parallel (MUCH faster)
-      // await Promise.all(
-      //   cartItems.map((item) =>
-      //     tx.productVariant.update({
-      //       where: { id: item.variantId },
-      //       data: { stock: { decrement: item.quantity } },
-      //     })
-      //   )
-      // );
-
-      // 3. Clear cart once
       await tx.cart.deleteMany({ where: { userId } });
       revalidateTag("orders");
       return createdOrder;
@@ -418,7 +315,7 @@ export async function updateOrderStatus(
     revalidateTag("orders");
     revalidateTag("orderDetails");
 
-    // --- Send email asynchronously ---
+    // Send email asynchronously
     if (
       newStatus === "SHIPPED" ||
       newStatus === "DELIVERED" ||

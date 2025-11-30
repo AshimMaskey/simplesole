@@ -25,8 +25,6 @@ export default async function AdminOrderDetailsPage({
   const { id } = await params;
 
   try {
-    // Get order details by querying with a temp user ID - in production,
-    // create an admin-specific query that bypasses user validation
     const orders = await getAllOrders(isAdmin ? "ADMIN" : "NOTADMIN");
     const order = orders.find((o) => o.id === id);
 

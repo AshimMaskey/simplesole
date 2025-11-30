@@ -347,31 +347,6 @@ export function ProductDialog({
                   />
                 </div>
 
-                {/* <div className="space-y-2">
-                  <Label htmlFor="stock">
-                    Total Stock
-                    {formData.variants && formData.variants.length > 0 && (
-                      <span className="ml-2 text-xs text-muted-foreground">
-                        (Auto-calculated from variants)
-                      </span>
-                    )}
-                  </Label>
-                  <Input
-                    id="stock"
-                    type="number"
-                    min="0"
-                    value={formData.total_stock}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        total_stock: Number.parseInt(e.target.value) || 0,
-                      })
-                    }
-                    placeholder="0"
-                    disabled={formData.variants && formData.variants.length > 0}
-                    required
-                  />
-                </div> */}
                 <div className="space-y-2">
                   <Label htmlFor="stock">
                     Total Stock

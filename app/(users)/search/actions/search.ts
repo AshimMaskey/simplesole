@@ -16,7 +16,7 @@ export async function searchProducts(query: string, sortBy: string) {
       ],
     },
     include: {
-      variants: true, // include if your schema has variants
+      variants: true,
     },
   });
 
@@ -31,7 +31,6 @@ export async function searchProducts(query: string, sortBy: string) {
       products.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
       break;
     default:
-      // relevance by name match
       products.sort((a, b) => {
         const aMatch = a.name.toLowerCase().includes(q) ? 1 : 0;
         const bMatch = b.name.toLowerCase().includes(q) ? 1 : 0;

@@ -14,7 +14,7 @@ export async function saveProduct(
   }));
 
   if (data.id) {
-    // ✏️ Edit existing product
+    // Edit existing product
     const updated = await prisma.product.update({
       where: { id: data.id },
       data: {
@@ -27,8 +27,8 @@ export async function saveProduct(
         status: data.status,
         images: data.images,
         variants: {
-          deleteMany: {}, // clear existing variants
-          create: variantData, // ✅ cleaned variant data
+          deleteMany: {},
+          create: variantData,
         },
       },
       include: { variants: true },
@@ -37,7 +37,7 @@ export async function saveProduct(
     revalidateTag("products");
     return updated;
   } else {
-    // ➕ Create new product
+    // Create new product
     const created = await prisma.product.create({
       data: {
         name: data.name,
@@ -49,7 +49,7 @@ export async function saveProduct(
         status: data.status,
         images: data.images,
         variants: {
-          create: variantData, // ✅ cleaned variant data
+          create: variantData,
         },
       },
       include: { variants: true },

@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function AdminOrderDetailsSkeleton() {
   return (
     <div className="space-y-6 p-6 md:p-15 animate-pulse">
-      {/* Status Update Card Skeleton */}
       <Card className="border-blue-200 bg-blue-50">
         <CardHeader>
           <CardTitle className="h-5 w-1/3 bg-gray-300 rounded"></CardTitle>
@@ -25,7 +24,6 @@ export default function AdminOrderDetailsSkeleton() {
         </CardContent>
       </Card>
 
-      {/* Customer Information Skeleton */}
       <Card>
         <CardHeader>
           <CardTitle className="h-5 w-1/4 bg-gray-300 rounded"></CardTitle>
@@ -38,7 +36,6 @@ export default function AdminOrderDetailsSkeleton() {
         </CardContent>
       </Card>
 
-      {/* Order Items Skeleton */}
       <Card>
         <CardHeader>
           <CardTitle className="h-5 w-1/4 bg-gray-300 rounded"></CardTitle>
@@ -63,7 +60,6 @@ export default function AdminOrderDetailsSkeleton() {
         </CardContent>
       </Card>
 
-      {/* Addresses Skeleton */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
@@ -83,7 +79,6 @@ export default function AdminOrderDetailsSkeleton() {
         </Card>
       </div>
 
-      {/* Order Summary Skeleton */}
       <Card>
         <CardHeader>
           <CardTitle className="h-5 w-1/3 bg-gray-300 rounded"></CardTitle>
@@ -96,7 +91,6 @@ export default function AdminOrderDetailsSkeleton() {
         </CardContent>
       </Card>
 
-      {/* Payment Info Skeleton */}
       <Card>
         <CardHeader>
           <CardTitle className="h-5 w-1/3 bg-gray-300 rounded"></CardTitle>
@@ -106,7 +100,6 @@ export default function AdminOrderDetailsSkeleton() {
         </CardContent>
       </Card>
 
-      {/* Notes Skeleton */}
       <Card>
         <CardHeader>
           <CardTitle className="h-5 w-1/4 bg-gray-300 rounded"></CardTitle>

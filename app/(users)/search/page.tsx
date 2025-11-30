@@ -33,7 +33,6 @@ export default function SearchPage() {
   const [isPending, startTransition] = useTransition();
   const [currentPage, setCurrentPage] = useState(1);
 
-  // ⏳ Debounce search
   useEffect(() => {
     const query = searchQuery.trim();
     if (query.length < 3) {
@@ -45,7 +44,7 @@ export default function SearchPage() {
       startTransition(async () => {
         const results = await searchProducts(query, sortBy);
         setSearchResults(results);
-        setCurrentPage(1); // reset page when new search happens
+        setCurrentPage(1);
       });
     }, 400);
 
@@ -66,7 +65,6 @@ export default function SearchPage() {
     toast.success(`${product.name}${variantInfo} has been added to your cart.`);
   };
 
-  // --- Pagination logic ---
   const totalPages = Math.ceil(searchResults.length / RESULTS_PER_PAGE);
   const paginatedResults = searchResults.slice(
     (currentPage - 1) * RESULTS_PER_PAGE,
@@ -78,15 +76,6 @@ export default function SearchPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Header & Search Bar */}
         <div className="mb-8 space-y-6">
-          {/* <div>
-            <h1 className="text-4xl text-center font-bold mb-2 text-balance">
-              Search
-            </h1>
-            <p className="text-muted-foreground text-center">
-              Find your perfect pair from our collection
-            </p>
-          </div> */}
-
           <div className="flex justify-center gap-2">
             <div className="relative flex-1 max-w-2xl">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />

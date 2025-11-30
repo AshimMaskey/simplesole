@@ -131,13 +131,6 @@ export default function OrderDetailsView({ order }: OrderDetailsViewProps) {
                   {idx < currentStepIndex ? "✓" : idx + 1}
                 </div>
                 <span className="text-xs">{step}</span>
-                {/* {idx < statusSteps.length - 1 && (
-                  <div
-                    className={`h-1 w-full mt-2 ${
-                      idx < currentStepIndex ? "bg-primary" : "bg-muted"
-                    }`}
-                  />
-                )} */}
               </div>
             ))}
           </div>

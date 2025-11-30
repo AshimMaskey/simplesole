@@ -75,7 +75,7 @@ export default function CartPage() {
     setLoadingRemoveAll(true);
     try {
       await clearCart(userId);
-      await fetchCart(); // refresh cart
+      await fetchCart();
       await refreshCount();
       toast.success("All items removed from cart!");
     } catch {
@@ -120,9 +120,9 @@ export default function CartPage() {
     (sum, item) => sum + item.variant.product.base_price * item.quantity,
     0
   );
-  // const tax = subtotal * 0.1;
+
   const tax = 0;
-  // const shipping = subtotal > 100 ? 0 : 9.99;
+
   const shipping: number = 0;
   const total = subtotal + tax + shipping;
 
@@ -251,12 +251,6 @@ export default function CartPage() {
                 <span className="text-lg font-bold">Total</span>
                 <span className="text-lg font-bold">${total.toFixed(2)}</span>
               </div>
-
-              {/* {subtotal < 100 && (
-                <p className="text-sm text-muted-foreground mb-4 text-center">
-                  Add ${(100 - subtotal).toFixed(2)} more for free shipping!
-                </p>
-              )} */}
 
               <Link href={"/checkout"}>
                 <Button className="w-full" size="lg">

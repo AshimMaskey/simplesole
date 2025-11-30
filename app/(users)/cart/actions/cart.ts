@@ -15,7 +15,6 @@ export async function addToCart(
     });
 
     if (existingItem) {
-      // If already exists → increase quantity
       const updated = await prisma.cart.update({
         where: { id: existingItem.id },
         data: { quantity: existingItem.quantity + quantity },
