@@ -1,8 +1,6 @@
-# SimpleSole - Modern Shoe E-commerce Platform
+# SoleMate - Modern Shoe E-commerce Platform
 
 A modern, full-stack e-commerce platform for footwear built with Next.js, featuring a beautiful UI, secure authentication, and seamless shopping experience.
-
-![SimpleSole Screenshot](/public/og.png)
 
 ## ✨ Features
 
