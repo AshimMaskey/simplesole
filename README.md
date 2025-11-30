@@ -1,36 +1,123 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SimpleSole - Modern Shoe E-commerce Platform
 
-## Getting Started
+A modern, full-stack e-commerce platform for footwear built with Next.js, featuring a beautiful UI, secure authentication, and seamless shopping experience.
 
-First, run the development server:
+![SimpleSole Screenshot](/public/og.png)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- 🛍️ **Product Browsing**: Browse and filter through a wide range of footwear
+- 🔐 **Secure Authentication**: Powered by Clerk for secure user authentication
+- 🛒 **Shopping Cart**: Add, remove, and manage items in your cart
+- 🌓 **Dark/Light Mode**: Built-in theme support for better user experience
+- 📱 **Responsive Design**: Works seamlessly on all devices
+- ⚡ **Fast Performance**: Built with Next.js 14 and Turbopack for optimal performance
+- 📦 **Modern UI**: Built with Radix UI and TailwindCSS for beautiful, accessible components
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Frontend**: Next.js 14, React 19, TypeScript
+- **Styling**: TailwindCSS, Radix UI
+- **Authentication**: Clerk
+- **Database**: PostgreSQL with Prisma ORM
+- **State Management**: React Hook Form, React Context
+- **UI Components**: Radix UI, Lucide Icons, Tabler Icons
+- **Form Handling**: React Hook Form with Zod validation
+- **Notifications**: Sonner & React Hot Toast
+- **Charts**: Recharts for data visualization
+- **Animations**: Framer Motion
+- **Email**: Nodemailer
 
-## Learn More
+## 🚀 Getting Started
 
-To learn more about Next.js, take a look at the following resources:
+### Prerequisites
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Node.js 18.17 or later
+- npm, yarn, or pnpm
+- PostgreSQL database
+- Clerk account for authentication
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Installation
 
-## Deploy on Vercel
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/simplesole.git
+   cd simplesole
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn
+   # or
+   pnpm install
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Set up environment variables:
+   Create a `.env.local` file in the root directory and add the following variables:
+   ```env
+   # Database
+   DATABASE_URL="postgresql://user:password@localhost:5432/simplesole?schema=public"
+   
+   # Clerk Authentication
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+   CLERK_SECRET_KEY=your_clerk_secret_key
+   NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+   NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+   NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
+   NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
+   
+   # Email (Nodemailer with Gmail)
+   GMAIL_USER=your-email@gmail.com
+   GMAIL_PASS=your-gmail-app-password  # Use App Password if 2FA is enabled
+   
+   # Cloudinary
+   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+   CLOUDINARY_API_KEY=your_cloudinary_api_key
+   CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+   ```
+   
+   **Note for Gmail:**
+   - If you have 2FA enabled on your Gmail account, you'll need to generate an App Password
+   - Go to your Google Account > Security > 2-Step Verification > App passwords
+   - Generate a new app password and use it in the `GMAIL_PASS` variable
+
+4. Set up the database:
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
+
+5. Run the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   # or
+   pnpm dev
+   ```
+
+6. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+
+## 📦 Available Scripts
+
+- `npm run dev` - Start the development server
+- `npm run build` - Build the application for production
+- `npm start` - Start the production server
+- `npm run lint` - Run ESLint
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [Next.js](https://nextjs.org/) for the amazing framework
+- [TailwindCSS](https://tailwindcss.com/) for the utility-first CSS framework
+- [Radix UI](https://www.radix-ui.com/) for accessible UI components
+- [Clerk](https://clerk.com/) for authentication
